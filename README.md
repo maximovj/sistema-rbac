@@ -1,8 +1,3 @@
-Perfecto 👍 entonces **ya estás en Escenario 2 (Maven multi-módulo, nivel enterprise)**.
-Aquí va **la guía correcta y exacta** para tu caso, sin ambigüedades.
-
----
-
 # 🏗️ Estructura del Proyecto
 
 ```
