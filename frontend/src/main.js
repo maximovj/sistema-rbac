@@ -4,7 +4,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-import PrimeVuePlugin from '@plugins/primevue'
+//import PrimeVuePlugin from '@plugins/primevue'
+import PrimeVue from "primevue/config";
+import Aura from '@primeuix/themes/aura';
 import '@styles/main.css'
 
 import { CustomIconsPlugin } from '@plugins/custom-icons'
@@ -15,7 +17,16 @@ app.use(createPinia())
 
 app.use(router)
 
-app.use(PrimeVuePlugin)
+app.use(PrimeVue, {
+        theme: {
+        preset: Aura,
+        options: {
+            prefix: 'p',
+            darkModeSelector: 'none', // none o system
+            cssLayer: false
+        }
+        }
+})
 
 app.use(CustomIconsPlugin)
 
