@@ -24,6 +24,7 @@ public class UsuarioPermisoEstadoSeeder implements ApplicationRunner {
                 UsuarioPermisoEstadoEntity
                 .builder()
                 .estado("ACTIVO")
+                .descripcion("PERMISO ACTIVO")
                 .build());
         }
 
@@ -32,6 +33,7 @@ public class UsuarioPermisoEstadoSeeder implements ApplicationRunner {
                 UsuarioPermisoEstadoEntity
                 .builder()
                 .estado("DESACTIVADO")
+                .descripcion("PERMISO DESACTIVADO")
                 .build());
         }
 

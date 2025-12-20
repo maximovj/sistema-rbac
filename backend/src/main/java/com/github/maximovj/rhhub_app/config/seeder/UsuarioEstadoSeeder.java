@@ -31,7 +31,7 @@ public class UsuarioEstadoSeeder implements ApplicationRunner {
             this.repository.save(UsuarioEstadoEntity
                 .builder()
                 .estado("CREADA")
-                .descripcion("Cuenta creada")
+                .descripcion("CUENTA CREADA")
                 .build());
         }
 
@@ -39,7 +39,7 @@ public class UsuarioEstadoSeeder implements ApplicationRunner {
             this.repository.save(UsuarioEstadoEntity
                 .builder()
                 .estado("ELIMINADA")
-                .descripcion("Cuenta eliminada")
+                .descripcion("CUENTA ELIMINADA")
                 .build());
         }
 
@@ -47,7 +47,7 @@ public class UsuarioEstadoSeeder implements ApplicationRunner {
             this.repository.save(UsuarioEstadoEntity
                 .builder()
                 .estado("VERIFICADA")
-                .descripcion("Cuenta verificada")
+                .descripcion("CUENTA VERIFICADA")
                 .build());
         }
 

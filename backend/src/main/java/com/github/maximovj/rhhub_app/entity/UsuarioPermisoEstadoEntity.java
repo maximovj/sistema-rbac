@@ -28,9 +28,13 @@ public class UsuarioPermisoEstadoEntity {
     @JsonProperty("usuario_permiso_estado_id")
     private Long usuarioPermisoEstadoId;
 
-    @Column(name="ESTADO", nullable = false, unique = false)
+    @Column(name="ESTADO", nullable = false, unique = true)
     @JsonProperty("estado")
     private String estado;
+
+    @Column(name="DESCRIPCION", nullable = false, unique = true)
+    @JsonProperty("descripcion")
+    private String descripcion;
 
     // !! RELACIONES
 
