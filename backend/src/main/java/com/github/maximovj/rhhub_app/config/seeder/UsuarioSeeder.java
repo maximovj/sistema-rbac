@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import com.github.maximovj.rhhub_app.repository.UsuarioEstadoRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioGruposRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioRepository;
 
+@Profile("seeder")
 @Component
 @Order(6)
 public class UsuarioSeeder implements ApplicationRunner {

@@ -1,6 +1,7 @@
 package com.github.maximovj.rhhub_app.config.seeder;
 
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.github.maximovj.rhhub_app.repository.UsuarioEstadoRepository;
 
 import lombok.AllArgsConstructor;
 
+@Profile("seeder")
 @AllArgsConstructor
 @Component
 @Order(1)

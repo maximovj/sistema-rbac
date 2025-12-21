@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import com.github.maximovj.rhhub_app.repository.UsuarioRolRepository;
 
 import jakarta.transaction.Transactional;
 
+@Profile("seeder")
 @Component
 @Order(5)
 public class UsuarioRolSeeder implements ApplicationRunner {

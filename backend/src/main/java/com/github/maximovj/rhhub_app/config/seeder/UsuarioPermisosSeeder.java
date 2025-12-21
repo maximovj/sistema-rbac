@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import com.github.maximovj.rhhub_app.entity.UsuarioPermisosEntity;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisoEstadoRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisosRepository;
 
-
+@Profile("seeder")
 @Component
 @Order(3)
 public class UsuarioPermisosSeeder implements ApplicationRunner {
