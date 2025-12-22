@@ -30,6 +30,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SaveIcon: typeof import('./src/components/common/icons/SaveIcon.vue')['default']
     Select: typeof import('primevue/select')['default']
+    TabPanel: typeof import('primevue/tabpanel')['default']
+    TabView: typeof import('primevue/tabview')['default']
     ThemeToggle: typeof import('./src/common/components/ThemeToggle.vue')['default']
     Toast: typeof import('primevue/toast')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
