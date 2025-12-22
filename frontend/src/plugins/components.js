@@ -1,14 +1,10 @@
 // src/plugins/common.js
 import { defineAsyncComponent } from 'vue'
 
-// Importar utils y constantes globales
-import * as utils from '@/common/utils'
-import * as constants from '@/common/constants'
-
 export default {
   install(app) {
     // 1️⃣ Componentes normales (carga estática)
-    const normalComponents = import.meta.glob('@/common/components/*.vue', { eager: true })
+    const normalComponents = import.meta.glob('@components/*.vue', { eager: true })
     for (const path in normalComponents) {
       const component = normalComponents[path].default
       const name = path.split('/').pop().replace('.vue', '')
@@ -16,7 +12,7 @@ export default {
     }
 
     // 2️⃣ Componentes grandes / lazy (carga dinámica)
-    const lazyComponents = import.meta.glob('@/common/components/lazy/*.vue')
+    const lazyComponents = import.meta.glob('@components/lazy/*.vue')
     for (const path in lazyComponents) {
       const name = path.split('/').pop().replace('.vue', '')
 
@@ -25,16 +21,5 @@ export default {
         app.component(name, defineAsyncComponent(lazyComponents[path]))
       }
     }
-
-    // 3️⃣ Iconos (carga dinámica)
-    const icons = import.meta.glob('@/common/icons/*.vue')
-    for (const path in icons) {
-      const name = path.split('/').pop().replace('.vue', '')
-      app.component(name, defineAsyncComponent(icons[path]))
-    }
-
-    // 4️⃣ Utils y constantes globales
-    app.config.globalProperties.$utils = utils
-    app.config.globalProperties.$constants = constants
   }
 }
