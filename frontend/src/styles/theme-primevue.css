@@ -1,5 +1,5 @@
 /* ===============================
-   PALETA SPORT YELLOW – LIGHT MODE
+   PALETA LIGHT MODE
 =============================== */
 :root {
   /* PRIMARY */
@@ -34,30 +34,53 @@
 /* ===============================
    PALETA DARK MODE
 =============================== */
-
-
-/* Para sistema - media query */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --p-primary-500: #F4C430;
-    --p-surface-0: #1a1a1a;
-    --p-text-color: #FFFFFF;
-    /* ... resto de variables */
-  }
-}
-
-/* Para clase .dark manual */
 .dark {
+  /* PRIMARY (puedes cambiar si quieres) */
+  --p-primary-50:  #1a1a1a;
+  --p-primary-100: #2a2a2a;
+  --p-primary-200: #3a3a3a;
+  --p-primary-300: #4a4a4a;
+  --p-primary-400: #5a5a5a;
+  --p-primary-500: #F4C430; /* mantiene tu amarillo */
+  --p-primary-600: #D4A017;
+  --p-primary-700: #B38610;
+  --p-primary-800: #8F6B0A;
+  --p-primary-900: #6B5005;
+
+  /* SURFACE */
   --p-surface-0: #1a1a1a;
   --p-surface-50: #2a2a2a;
   --p-surface-100: #3a3a3a;
   --p-surface-200: #4a4a4a;
 
+  /* TEXT */
   --p-text-color: #FFFFFF;
   --p-text-muted-color: #A0A0A0;
 
+  /* BORDER */
   --p-border-color: #888;
 }
+
+/* ===============================
+   PRIMEVUE DATATABLE DARK MODE
+=============================== */
+/* Dark mode */
+[data-theme="dark"] .p-datatable-table {
+  background-color: var(--p-surface-0);
+}
+
+[data-theme="dark"] .p-datatable-thead > tr > th {
+  background-color: var(--p-surface-100);
+  color: var(--p-text-color);
+  border-color: var(--p-border-color);
+}
+
+[data-theme="dark"] .p-datatable-tbody > tr > td {
+  background-color: var(--p-surface-50);
+  color: var(--p-text-color);
+  border-color: var(--p-border-color);
+}
+
 
 /* ===============================
    BOTONES GLOBALES
@@ -87,7 +110,20 @@
 }
 
 /* Ripple */
-.p-ripple .p-ink { z-index:2; }
+.p-ripple .p-ink { z-index: 2; }
 
 /* Hover */
 .btn-ok:hover, .btn-outline:hover { opacity: 0.85; }
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}

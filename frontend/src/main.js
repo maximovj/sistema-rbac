@@ -4,7 +4,6 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-//import PrimeVuePlugin from '@plugins/primevue'
 import PrimeVue from "primevue/config";
 import SportYellowPreset from './themes/SportYellowTheme'
 import '@styles/main.css'
@@ -25,7 +24,7 @@ app.use(PrimeVue, {
     preset: SportYellowPreset,
     options: {
       prefix: 'p',
-      darkModeSelector: '.dark',
+      darkModeSelector: '[data-theme="dark"]',
       cssLayer: false
     }
   }

@@ -5,8 +5,12 @@ const isDarkMode = ref(false);
 
 const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value;
-    document.documentElement.classList.toggle('dark');
+    document.documentElement.setAttribute(
+        'data-theme',
+        isDarkMode.value ? 'dark' : 'light'
+    );
 }
+
 </script>
 
 <template>
