@@ -130,7 +130,7 @@ export default {
     }
   },
   mounted() {
-    this.$utils.setTitle(this.metaTitle);
+    this.$utils.setMetaTitleWelcome(this.metaTitle);
   }
 }
 </script>

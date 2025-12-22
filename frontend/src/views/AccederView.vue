@@ -10,7 +10,7 @@
           <input
             id="usuario"
             v-model="usuario"
-            type="usuario"
+            type="text"
             placeholder="demo"
             class="w-full px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -23,7 +23,7 @@
           <input
             id="contrasena"
             v-model="contrasena"
-            type="contrasena"
+            type="password"
             placeholder="********"
             class="w-full px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -42,6 +42,7 @@
         <!-- Botón de login -->
         <Button
           type="submit"
+          :loading="cargando"
           label="Ingresar"
           icon="pi pi-sign-in"
           class="w-full p-button-primary mt-4"
@@ -57,24 +58,48 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue'
+<script>
+import { useAuthStore } from '@stores/auth'
 
-const usuario = ref('')
-const contrasena = ref('')
-const remember = ref(false)
+export default {
+  data() {
+    return {
+      cargando: false,
+      metaTitle: 'Inciar Sesión',
+      usuario: '',
+      contrasena: '',
+      remember: false,
+    };
+  },
 
-const login = () => {
-  // Aquí pondrías la lógica de autenticación
-  console.log('Usuario:', usuario.value)
-  console.log('Contraseña:', contrasena.value)
-  console.log('Remember:', remember.value)
-}
+  methods: {
+    async login() {
+      this.cargando = true;
 
-onMounted(() => {
-  document.title = 'Iniciar sesión';
-  
-})
+      const data = await this.$utils.apiExecutarV1({
+        tryFetch:{ 
+          data: { size: 10, page: 0 }
+        },
+        finallyFn: () => {
+          this.cargando = false;
+        },
+      });
+      console.log("⚠️", "ApiExcete", "data", data);
+
+      // Aquí pondrías la lógica de autenticación
+      console.log('Usuario:', this.usuario);
+      console.log('Contraseña:', this.contrasena);
+      console.log('Remember:', this.remember);
+
+      const authStore = useAuthStore();
+      authStore.login(this.usuario, this.contrasena);
+    }
+  },
+
+  mounted() {
+    this.$utils.setMetaTitle(this.metaTitle);
+  }
+};
 </script>
 
 <style>
