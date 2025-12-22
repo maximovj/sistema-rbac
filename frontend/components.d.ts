@@ -12,10 +12,12 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AlertCustom: typeof import('./src/components/common/modals/AlertCustom.vue')['default']
+    AppCustom: typeof import('./src/components/lazy/AppCustom.vue')['default']
     BookmarkIcon: typeof import('./src/components/common/icons/BookmarkIcon.vue')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
+    Componente: typeof import('./src/components/Componente.vue')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     Form: typeof import('@primevue/forms/form')['default']
     InputText: typeof import('primevue/inputtext')['default']
@@ -24,5 +26,9 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SaveIcon: typeof import('./src/components/common/icons/SaveIcon.vue')['default']
     Select: typeof import('primevue/select')['default']
+    ThemeToggle: typeof import('./src/common/components/ThemeToggle.vue')['default']
+  }
+  export interface GlobalDirectives {
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }
