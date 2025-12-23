@@ -94,6 +94,7 @@ export default {
       const authStore = useAuthStore();
       authStore.login(this.usuario, this.contrasena);
       console.log('⚠️',"mi token: " , authStore.token);
+      window.location.href = "/panel";
     }
   },
 

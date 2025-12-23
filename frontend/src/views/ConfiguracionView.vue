@@ -36,6 +36,7 @@
               <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
                 <h2 class="font-medium mb-2">Preferencias de usuario</h2>
                 <div class="space-y-2">
+                  <ThemeToggle />
                   <label class="flex items-center gap-2">
                     <input type="checkbox" class="form-checkbox"/>
                     Habilitar notificaciones
@@ -44,6 +45,14 @@
                     <input type="checkbox" class="form-checkbox"/>
                     Modo oscuro por defecto
                   </label>
+                  <div class="flex items-center gap-2 sm:gap-3">
+                    <Button
+                      label="Salir"
+                      icon="pi pi-power-off"
+                      @click="salir"
+                      class="p-button-danger p-button-text hidden sm:inline-flex"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -123,10 +132,26 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/stores/auth';
+
 export default {
   data() {
     return {
       metaTitle: 'Configuración'
+    }
+  },
+  methods: {
+    async salir() { 
+      const desicion = await window.$alert.confirm({ 
+        message: '¿Seguro que deseas salir?',
+        buttons: {visible: ["yes", "cancel"] } 
+      });
+
+      if(desicion == 'yes') {
+        const auth = useAuthStore();
+        auth.logout();
+        window.location.href = "/";
+      }
     }
   },
   mounted() {

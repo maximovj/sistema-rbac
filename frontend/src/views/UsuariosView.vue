@@ -34,6 +34,7 @@
             <Button
               label="Salir"
               icon="pi pi-power-off"
+              @click="salir"
               class="p-button-danger p-button-text hidden sm:inline-flex"
             />
           </div>
@@ -127,6 +128,8 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/stores/auth';
+
 export default {
   // Definir propiedades
   data() {
@@ -152,6 +155,18 @@ export default {
   methods: {
     isActive(path) {
       return this.route.path.startsWith(path) ? 'p-button-primary' : ''
+    },
+    async salir() { 
+      const desicion = await window.$alert.confirm({ 
+        message: '¿Seguro que deseas salir?',
+        buttons: {visible: ["yes", "cancel"] } 
+      });
+
+      if(desicion == 'yes') {
+        const auth = useAuthStore();
+        auth.logout();
+        window.location.href = "/";
+      }
     },
     async cargarUsuarios() {
       try {
