@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { useAuthStore } from '@stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   data() {
@@ -87,12 +87,13 @@ export default {
       console.log("⚠️", "ApiExcete", "data", data);
 
       // Aquí pondrías la lógica de autenticación
-      console.log('Usuario:', this.usuario);
-      console.log('Contraseña:', this.contrasena);
-      console.log('Remember:', this.remember);
+      console.log('⚠️','Usuario:', this.usuario);
+      console.log('⚠️','Contraseña:', this.contrasena);
+      console.log('⚠️','Remember:', this.remember);
 
       const authStore = useAuthStore();
       authStore.login(this.usuario, this.contrasena);
+      console.log('⚠️',"mi token: " , authStore.token);
     }
   },
 

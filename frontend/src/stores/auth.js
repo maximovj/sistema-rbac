@@ -3,13 +3,12 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(null) // info del usuario o null si no está logueado
+  const user = ref(null)
   const token = ref(null)
 
-  const login = ({ email, password }) => {
-    // Simulación de login
+  const login = ({ usuario, password }) => {
     token.value = 'mi-token-falso'
-    user.value = { email } // puedes agregar más info
+    user.value = { usuario }
   }
 
   const logout = () => {
@@ -20,4 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = () => !!token.value
 
   return { user, token, login, logout, isLoggedIn }
+}, {
+  persist: {
+    paths: ['token', 'user'] // <--- persistir solo estas propiedades
+  } 
 })

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +34,7 @@ const router = createRouter({
 // Guard para rutas protegidas usando Pinia
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
+  console.log("⚠️", "auth.token", auth.token);
   if (to.meta.requiresAuth && !auth.isLoggedIn()) {
     await window.$alert.alert({ message: 'Debe iniciar sesión para continuar' });
     next('/acceder')

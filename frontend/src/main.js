@@ -1,5 +1,8 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+
+import CommonPlugin from './plugins/common'
+
+import PiniaPlugin from './plugins/pinia'
 
 import App from './App.vue'
 import router from './router'
@@ -10,11 +13,9 @@ import '@styles/main.css'
 import '@styles/theme-primevue.css'
 import '@styles/gradients.css'
 
-import CommonPlugin from './plugins/common'
-
 const app = createApp(App)
 
-app.use(createPinia())
+app.use(PiniaPlugin)
 
 app.use(router)
 
