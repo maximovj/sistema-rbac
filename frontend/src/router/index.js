@@ -8,6 +8,7 @@ const router = createRouter({
       path: '/acceder',
       name: 'acceder',
       component: () => import('@/views/AccederView.vue'),
+      meta: { requiresGuest: true }
     },
     {
       path: '/panel',
@@ -32,15 +33,20 @@ const router = createRouter({
 })
 
 // Guard para rutas protegidas usando Pinia
-router.beforeEach(async (to, from, next) => {
-  const auth = useAuthStore()
-  console.log("⚠️", "auth.token", auth.token);
-  if (to.meta.requiresAuth && !auth.isLoggedIn()) {
-    await window.$alert.alert({ message: 'Debe iniciar sesión para continuar' });
-    next('/acceder')
-  } else if (to.path === '/acceder' && auth.isLoggedIn()) {
-    next('/panel')
-  } else {
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  const isAuthenticated = authStore.isLoggedIn
+  
+  // Si la ruta requiere autenticación y no está logueado
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({name: 'acceder'})
+  }
+  // Si la ruta es para invitados (login) y ya está autenticado
+  else if (to.meta.requiresGuest && isAuthenticated) {
+    next({name: 'panel'})
+  }
+  // En cualquier otro caso, permitir navegación
+  else {
     next()
   }
 })

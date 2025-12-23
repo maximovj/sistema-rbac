@@ -92,9 +92,16 @@ export default {
       console.log('⚠️','Remember:', this.remember);
 
       const authStore = useAuthStore();
-      authStore.login(this.usuario, this.contrasena);
-      console.log('⚠️',"mi token: " , authStore.token);
-      window.location.href = "/panel";
+      authStore.login({
+        usuario: this.usuario, 
+        password: this.contrasena,
+        remember: this.remember,
+      });
+      
+      if (authStore.isLoggedIn) {
+        // Sin recargar la pagina
+        this.$router.push('/panel');
+      }
     }
   },
 
