@@ -1,4 +1,4 @@
-package com.github.maximovj.rhhub_app.service;
+package com.github.maximovj.rhhub_app.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,9 +1,8 @@
 package com.github.maximovj.rhhub_app.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,18 +12,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.AllArgsConstructor;
+
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import com.github.maximovj.rhhub_app.config.filter.AutenticacionJwtFilter;
-
+@AllArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -32,12 +35,8 @@ public class SecurityConfig {
 
     private final AutenticacionJwtFilter filtroAutenticacionJwt;
 
-    public SecurityConfig(@Lazy AutenticacionJwtFilter filtroAutenticacionJwt) {
-        this.filtroAutenticacionJwt = filtroAutenticacionJwt;
-    }
-
     @Bean
-    public SecurityFilterChain filtroSeguridad(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filtroSeguridad(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
@@ -47,7 +46,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(proveedorAutenticacion())
+                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(filtroAutenticacionJwt, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -58,9 +57,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider proveedorAutenticacion() {
+    public AuthenticationProvider proveedorAutenticacion(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(servicioDetallesUsuario());
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(codificadorPassword());
         return provider;
     }
@@ -70,6 +69,7 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /* 
     @Bean
     public UserDetailsService servicioDetallesUsuario() {
         UserDetails usuario = User.builder()
@@ -86,4 +86,5 @@ public class SecurityConfig {
         
         return new InMemoryUserDetailsManager(usuario, admin);
     }
+    */
 }

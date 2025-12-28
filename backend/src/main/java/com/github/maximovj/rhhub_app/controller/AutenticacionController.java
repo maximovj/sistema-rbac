@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.maximovj.rhhub_app.config.security.ServicioJwt;
 import com.github.maximovj.rhhub_app.dto.autenticacion.LoginInDto;
 import com.github.maximovj.rhhub_app.dto.autenticacion.LoginOutDto;
-import com.github.maximovj.rhhub_app.service.ServicioJwt;
 
 @RestController
 @RequestMapping("/api/v1/autenticacion")
