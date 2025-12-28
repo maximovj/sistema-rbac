@@ -1,4 +1,4 @@
-// stores/auth.js
+// common/stores/authStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 

@@ -1,6 +1,7 @@
 // utils/apiUtils.js
 import axios from "axios";
-import { useUiStore } from "@/stores/ui";
+import { useUiStore } from "@/common/stores/uiStore";
+import { useAlertStore } from "../stores/alertStore";
 
 export async function apiExecutar({
   method = "get",
@@ -16,6 +17,8 @@ export async function apiExecutar({
 } = {}) {
 
   const ui = useUiStore();
+  const alert = useAlertStore();
+
   ui.startLoading();
 
   await new Promise((resolve, reject) => { 
@@ -32,7 +35,7 @@ export async function apiExecutar({
     });
 
     if (showSuccess) {
-      await window.$alert.alert({
+      await alert.alert({
         title: "Aviso",
         message: successMessage || "Operación realizada correctamente",
       });
@@ -43,7 +46,7 @@ export async function apiExecutar({
   } catch (error) {
 
     if (showError) {
-      await window.$alert.alert({
+      await alert.alert({
         title: "Error",
         message: errorMessage || error.message,
       });
@@ -52,7 +55,7 @@ export async function apiExecutar({
     throw error;
 
   } finally {
-    ui.stopLoading();
+    ui.hideLoading();
   }
 }
 
@@ -78,9 +81,11 @@ export function apiExecutarV1({
 } = {}) {
   return new Promise( (resolve, reject) => {
     setTimeout( async () => {
+      const alert = useAlertStore();
+
       try {
         if (alertFetch.showSuccess) {
-          await window.$alert.alert({
+          await alert.alert({
             title: alertFetch.titleSuccess,
             message: alertFetch.messageSuccess
           });
@@ -94,7 +99,7 @@ export function apiExecutarV1({
       } catch (error) {
 
         if (alertFetch.showError) {
-          await window.$alert.alert({
+          await alert.alert({
             title: alertFetch.titleError,
             message: alertFetch.messageError
           });
@@ -131,10 +136,12 @@ export function apiExecutarV2({
   return new Promise((resolve, reject) => {
 
     setTimeout( async () => {
+      const alert = useAlertStore();
+
       try {
 
         if (showSuccess) {
-          await window.$alert.alert({
+          await alert.alert({
             title: "Aviso",
             message: successMessage
           });
@@ -147,7 +154,7 @@ export function apiExecutarV2({
 
       } catch (error) {
 
-        await window.$alert.alert({
+        await alert.alert({
           title: "Error",
           message: errorMessage
         });
@@ -178,10 +185,12 @@ export async function apiExecutarV3({
 
   try {
 
+    const alert = useAlertStore();
     await new Promise(r => setTimeout(r, 4500));
 
+
     if (showSuccess) {
-      await window.$alert.alert({
+      await alert.alert({
         title: "Aviso",
         message: successMessage
       });
@@ -191,7 +200,7 @@ export async function apiExecutarV3({
 
   } catch (error) {
 
-    await window.$alert.alert({
+    await alert.alert({
       title: "Error",
       message: errorMessage
     });
