@@ -20,18 +20,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.github.maximovj.rhhub_app.config.properties.CorsProperties;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @AllArgsConstructor
 @Configuration

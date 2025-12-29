@@ -3,7 +3,6 @@ package com.github.maximovj.rhhub_app.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.maximovj.rhhub_app.config.properties.CookieRefreshTokenProperties;

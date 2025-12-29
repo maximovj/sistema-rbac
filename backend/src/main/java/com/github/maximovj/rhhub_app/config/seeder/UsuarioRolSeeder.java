@@ -1,9 +1,6 @@
 package com.github.maximovj.rhhub_app.config.seeder;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.github.maximovj.rhhub_app.config.properties.SeederProperties;
 import com.github.maximovj.rhhub_app.entity.UsuarioGruposEntity;
-import com.github.maximovj.rhhub_app.entity.UsuarioPermisosEntity;
 import com.github.maximovj.rhhub_app.entity.UsuarioRolEntity;
 import com.github.maximovj.rhhub_app.repository.UsuarioGruposRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisosRepository;
