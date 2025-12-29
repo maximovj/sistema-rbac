@@ -16,16 +16,12 @@ public class LoginOutDto {
     @JsonProperty(value = "acceso_token")
     private String accesoToken;
 
-    @JsonProperty(value = "renovar_token")
-    private String renovarToken;
-
     @JsonProperty(value = "tipo_token")
     private String tipoToken;
     
     // Constructor personalizado adicional
-    public LoginOutDto(String accesoToken, String renovarToken) {
+    public LoginOutDto(String accesoToken) {
         this.accesoToken = accesoToken;
-        this.renovarToken = renovarToken;
         this.tipoToken = "Bearer";
     }
     
