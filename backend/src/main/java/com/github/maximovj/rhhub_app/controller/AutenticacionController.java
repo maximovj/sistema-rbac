@@ -1,8 +1,11 @@
 package com.github.maximovj.rhhub_app.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.maximovj.rhhub_app.config.security.ServicioJwt;
 import com.github.maximovj.rhhub_app.dto.autenticacion.LoginInDto;
 import com.github.maximovj.rhhub_app.dto.autenticacion.LoginOutDto;
+import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
 import com.github.maximovj.rhhub_app.entity.RenovarTokensEntity;
 import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 import com.github.maximovj.rhhub_app.repository.RenovarTokensRepository;
@@ -31,101 +35,136 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AutenticacionController {
 
     @Autowired    
-    AuthenticationManager gestorAutenticacion;
-    
-    @Autowired
-    ServicioJwt servicioJwt;
-    
-    @Autowired
-    UserDetailsService servicioDetallesUsuario;
+    private AuthenticationManager gestorAutenticacion;
 
     @Autowired
-    UsuarioRepository usuarioRepository;
+    private ServicioJwt servicioJwt;
+
+    @Autowired
+    private UserDetailsService servicioDetallesUsuario;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired 
-    RenovarTokensRepository renovarTokensRepository;
+    private RenovarTokensRepository renovarTokensRepository;
 
     @Autowired
-    RenovarTokensService renovarTokensService;
+    private RenovarTokensService renovarTokensService;
 
-    // Login
+    // ---------------- LOGIN ----------------
     @PostMapping("/login")
-    public ResponseEntity<LoginOutDto> login(@RequestBody LoginInDto request, HttpServletResponse response) {
-        gestorAutenticacion.authenticate(
+    public ResponseEntity<?> login(@RequestBody LoginInDto request, HttpServletResponse response) {
+        boolean recuerdame = Boolean.valueOf(request.isRecuerdame());
+
+        try {
+            // Autenticar usuario
+            gestorAutenticacion.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsuario(), request.getContrasena())
-        );
-
-        UserDetails userDetails = servicioDetallesUsuario.loadUserByUsername(request.getUsuario());
-        String accessToken = servicioJwt.generarToken(userDetails.getUsername());
-
-        UsuarioEntity usuario = usuarioRepository.findByUsuario(request.getUsuario()).get();
-        RenovarTokensEntity refreshToken = renovarTokensService.createRefreshToken(usuario);
-
-        // Guardar refresh token en HttpOnly cookie
-        Cookie cookie = new Cookie("refreshToken", refreshToken.getToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/api/v1/autenticacion"); // limitar ruta
-        cookie.setMaxAge(7 * 24 * 60 * 60); // 7 días
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok(new LoginOutDto(accessToken, null));
-    }
-
-
-    // Refresh token
-    @PostMapping("/refresh")
-    public ResponseEntity<LoginOutDto> refresh(@CookieValue("refreshToken") String refreshTokenValue) {
-        RenovarTokensEntity refreshToken = renovarTokensRepository.findByToken(refreshTokenValue)
-                .orElseThrow(() -> new RuntimeException("Refresh token inválido"));
-
-        if (!renovarTokensService.isValid(refreshToken)) {
-            return ResponseEntity.status(401).build();
+            );
+        } catch (Exception e) {
+            return ApiResponse.unauthorized("Usuario y/o contraseña incorrectas", null);
         }
 
-        String accessToken = servicioJwt.generarToken(refreshToken.getUsuario().getUsuario());
-        return ResponseEntity.ok(new LoginOutDto(accessToken, null));
+        // Buscar usuario
+        Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByUsuario(request.getUsuario());
+        if (usuarioOpt.isEmpty()) {
+            return ApiResponse.notFound("Usuario no encontrado", null);
+        }
+        UsuarioEntity usuario = usuarioOpt.get();
+
+        // Revocar todos los refresh tokens antiguos
+        renovarTokensService.revokeAllTokens(usuario);
+
+        // Generar Access Token
+        String accessToken = servicioJwt.generarToken(usuario.getUsuario());
+
+        // Crear nuevo Refresh Token
+        RenovarTokensEntity refreshToken = renovarTokensService.createRefreshToken(usuario, recuerdame);
+
+        // Guardar cookie HttpOnly
+        response.addCookie(renovarTokensService.getCookie(refreshToken));
+
+        return ApiResponse.ok("Acceso exitosa", new LoginOutDto(accessToken));
     }
 
 
+    // ---------------- REFRESH TOKEN ----------------
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@CookieValue(value = "renovar_token", required = false) String refreshTokenValue,
+                                    HttpServletResponse response) {
+        if (refreshTokenValue == null) {
+            return ApiResponse.unauthorized("No se encontró cookie de renovar token", null);
+        }
+
+        Optional<RenovarTokensEntity> refreshTokenOpt = renovarTokensRepository.findByToken(refreshTokenValue);
+        if (refreshTokenOpt.isEmpty()) {
+            return ApiResponse.unauthorized("renovar token inválido", null);
+        }
+
+        RenovarTokensEntity refreshToken = refreshTokenOpt.get();
+
+        if (!renovarTokensService.isValid(refreshToken)) {
+            return ApiResponse.unauthorized("renovar token expirado o revocado", null);
+        }
+
+        // Revocar antiguo token
+        renovarTokensService.revoke(refreshToken);
+
+        // Generar access token
+        String accessToken = servicioJwt.generarToken(refreshToken.getUsuario().getUsuario());
+
+        // Crear refresh token nuevo y cookie
+        RenovarTokensEntity refreshTokenNuevo = renovarTokensService.createRefreshToken(refreshToken.getUsuario(),
+                refreshToken.isRecuerdame());
+        response.addCookie(renovarTokensService.getCookie(refreshTokenNuevo));
+
+        return ApiResponse.ok("renovar token generada correctamente", new LoginOutDto(accessToken));
+    }
+
+
+    // ---------------- VALIDAR JWT ----------------
     @PostMapping("/validate")
-    public ResponseEntity<Boolean> validarToken(@RequestHeader("Authorization") String authHeader) {
-        // Verificar que el header existe y tiene el prefijo Bearer
+    public ResponseEntity<?> validarToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(400).body(false); // Bad Request si no viene el header correcto
+            return ApiResponse.badRequest("No se encontro acceso token", null);
         }
 
         String token = authHeader.substring(7);
 
         try {
-            // Extraer el usuario desde el JWT
             String nombreUsuario = servicioJwt.extraerNombreUsuario(token);
-
-            // Cargar detalles del usuario
             UserDetails detallesUsuario = servicioDetallesUsuario.loadUserByUsername(nombreUsuario);
 
-            // Validar token
             boolean esValido = servicioJwt.esTokenValido(token, detallesUsuario);
 
-            if (esValido) {
-                return ResponseEntity.ok(true);
-            } else {
-                return ResponseEntity.status(401).body(false); // Unauthorized si el token es inválido
-            }
+            return esValido ?   ApiResponse.ok("acceso token válido", null) : 
+                                ApiResponse.unauthorized("acceso inválido o expirado", null);
+
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(404).body(false); // Usuario no encontrado
+            return ApiResponse.notFound("Usuario no encontrado", null);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(false); // Cualquier otra excepción -> Unauthorized
+            return ApiResponse.unauthorized("acceso token inválido o expirado", null);
         }
     }
 
-    // Logout global
+    // ---------------- LOGOUT GLOBAL ----------------
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody String usuario) {
-        UsuarioEntity usuarioEntity = usuarioRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public ResponseEntity<?> logout(@RequestBody String usuario, HttpServletResponse response) {
+        // Buscar usuario
+        Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByUsuario(usuario);
+        if (usuarioOpt.isEmpty()) {
+            return ApiResponse.notFound("Usuario no encontrado", null);
+        }
+        UsuarioEntity usuarioEntidad = usuarioOpt.get();
 
-        renovarTokensService.revokeAllTokens(usuarioEntity);
-        return ResponseEntity.ok().build();
+        // Revocar todos los refresh tokens
+        renovarTokensService.revokeAllTokens(usuarioEntidad);
+
+        // Eliminar cookie del cliente
+        response.addCookie(renovarTokensService.removeCookie());
+
+        return ApiResponse.ok("Sesión cerrada correctamente", null);
     }
-    
+
 }
