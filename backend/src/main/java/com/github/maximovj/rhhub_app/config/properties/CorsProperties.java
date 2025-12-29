@@ -11,7 +11,7 @@ import lombok.Setter;
 @Component
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "spring.web.cors")
+@ConfigurationProperties(prefix = "app.cors")
 public class CorsProperties {
     
     private List<String> allowedOrigins;
