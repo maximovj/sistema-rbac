@@ -3,6 +3,8 @@ package com.github.maximovj.rhhub_app.service;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.github.maximovj.rhhub_app.config.properties.CookieRefreshTokenProperties;
@@ -18,6 +20,8 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class RenovarTokensService {
+
+    public static Logger logger = LoggerFactory.getLogger(RenovarTokensService.class);
 
     RenovarTokensRepository refreshTokenRepository;
     
@@ -39,6 +43,8 @@ public class RenovarTokensService {
     }
 
     public boolean isValid(RenovarTokensEntity token) {
+        logger.info("Refresh Token Recibido : {}", token.estaSuspendido());
+        logger.info("Refresh Token Recibido : {}", token.getFechaDeExpiracion());
         return !token.estaSuspendido() && token.getFechaDeExpiracion().isAfter(Instant.now());
     }
 

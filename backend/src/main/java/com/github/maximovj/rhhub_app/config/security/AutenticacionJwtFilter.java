@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class AutenticacionJwtFilter extends OncePerRequestFilter {
@@ -22,9 +23,21 @@ public class AutenticacionJwtFilter extends OncePerRequestFilter {
     private final ServicioJwt servicioJwt;
     private final UserDetailsService servicioDetallesUsuario;
 
+    private static final List<String> URLS_EXCLUIDAS = List.of(
+        "/api/v1/autenticacion/login",
+        "/api/v1/autenticacion/refresh",
+        "/api/v1/autenticacion/logout"
+    );
+
     public AutenticacionJwtFilter(ServicioJwt servicioJwt, UserDetailsService servicioDetallesUsuario) {
         this.servicioJwt = servicioJwt;
         this.servicioDetallesUsuario = servicioDetallesUsuario;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return URLS_EXCLUIDAS.contains(path); // si es login/logout, no filtrar
     }
 
     @Override

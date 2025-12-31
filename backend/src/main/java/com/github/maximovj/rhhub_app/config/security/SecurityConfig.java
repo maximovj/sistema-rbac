@@ -36,22 +36,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filtroSeguridad(
-        HttpSecurity http, 
-        AuthenticationProvider authenticationProvider,
-        CorsProperties corsProperties
+            HttpSecurity http,
+            AuthenticationProvider authenticationProvider,
+            CorsProperties corsProperties
     ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(configuracionCors(corsProperties)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/autenticacion/**").permitAll()
+                        // Permitir login y logout sin JWT
+                        .requestMatchers(
+                            "/api/v1/autenticacion/login", 
+                            "/api/v1/autenticacion/refresh", 
+                            "/api/v1/autenticacion/logout"
+                        ).permitAll()
+                        // Cualquier otra request requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider)
+                // Aplicar filtro JWT solo después de que se decida si la ruta necesita autenticación
                 .addFilterBefore(filtroAutenticacionJwt, UsernamePasswordAuthenticationFilter.class)
+                // Configurar logout público
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/autenticacion/logout")
+                        .permitAll()
+                )
                 .build();
     }
 
