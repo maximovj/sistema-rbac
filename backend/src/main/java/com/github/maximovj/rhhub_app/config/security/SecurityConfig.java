@@ -59,11 +59,6 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 // Aplicar filtro JWT solo después de que se decida si la ruta necesita autenticación
                 .addFilterBefore(filtroAutenticacionJwt, UsernamePasswordAuthenticationFilter.class)
-                // Configurar logout público
-                .logout(logout -> logout
-                        .logoutUrl("/api/v1/autenticacion/logout")
-                        .permitAll()
-                )
                 .build();
     }
 

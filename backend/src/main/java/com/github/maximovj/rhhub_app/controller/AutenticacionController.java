@@ -2,7 +2,11 @@ package com.github.maximovj.rhhub_app.controller;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +36,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api/v1/autenticacion")
 public class AutenticacionController {
+
+    public static Logger logger = LoggerFactory.getLogger(AutenticacionController.class);
 
     @Autowired    
     private AuthenticationManager gestorAutenticacion;
@@ -73,17 +79,18 @@ public class AutenticacionController {
         UsuarioEntity usuario = usuarioOpt.get();
 
         // Revocar todos los refresh tokens antiguos
-        renovarTokensService.revokeAllTokens(usuario);
+        this.renovarTokensService.revokeAllTokens(usuario);
 
         // Generar Access Token
         String accessToken = servicioJwt.generarToken(usuario.getUsuario());
 
         // Crear nuevo Refresh Token
-        RenovarTokensEntity refreshToken = renovarTokensService.createRefreshToken(usuario, recuerdame);
+        RenovarTokensEntity refreshToken = this.renovarTokensService.createRefreshToken(usuario, recuerdame);
 
         // Guardar cookie HttpOnly
-        response.addCookie(renovarTokensService.getCookie(refreshToken));
-
+        ResponseCookie cookie = this.renovarTokensService.getCookie(refreshToken);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        
         InfoUsuarioOutDto usuarioDto = InfoUsuarioOutDto.builder()
         .grupo(usuario.getGrupo().getNombre())
         .permisos(usuario.getGrupo().getPermisos())
@@ -111,7 +118,7 @@ public class AutenticacionController {
 
         RenovarTokensEntity refreshToken = refreshTokenOpt.get();
 
-        if (!renovarTokensService.isValid(refreshToken)) {
+        if (!this.renovarTokensService.isValid(refreshToken)) {
             return ApiResponse.unauthorized("renovar token expirado o revocado", null);
         }
 
@@ -123,14 +130,15 @@ public class AutenticacionController {
         UsuarioEntity usuario = usuarioOpt.get();
 
         // Revocar antiguo token
-        renovarTokensService.revoke(refreshToken);
+        this.renovarTokensService.revoke(refreshToken);
 
         // Generar access token
         String accessToken = servicioJwt.generarToken(usuario.getUsuario());
 
         // Crear refresh token nuevo y cookie
-        RenovarTokensEntity refreshTokenNuevo = renovarTokensService.createRefreshToken(usuario, refreshToken.isRecuerdame());
-        response.addCookie(renovarTokensService.getCookie(refreshTokenNuevo));
+        RenovarTokensEntity refreshTokenNuevo = this.renovarTokensService.createRefreshToken(usuario, refreshToken.isRecuerdame());
+        ResponseCookie cookie = this.renovarTokensService.getCookie(refreshTokenNuevo);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         InfoUsuarioOutDto usuarioDto = InfoUsuarioOutDto.builder()
         .grupo(usuario.getGrupo().getNombre())
@@ -172,18 +180,20 @@ public class AutenticacionController {
     // ---------------- LOGOUT GLOBAL ----------------
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestBody String usuario, HttpServletResponse response) {
+        logger.info("usuario: {}", usuario);
         // Buscar usuario
-        Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByUsuario(usuario);
+        Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByUsuarioWithDetails(usuario);
         if (usuarioOpt.isEmpty()) {
             return ApiResponse.notFound("Usuario no encontrado", null);
         }
         UsuarioEntity usuarioEntidad = usuarioOpt.get();
 
         // Revocar todos los refresh tokens
-        renovarTokensService.revokeAllTokens(usuarioEntidad);
+        this.renovarTokensService.revokeAllTokens(usuarioEntidad);
 
         // Eliminar cookie del cliente
-        response.addCookie(renovarTokensService.removeCookie());
+        ResponseCookie cookie = this.renovarTokensService.removeCookie();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ApiResponse.ok("Sesión cerrada correctamente", null);
     }

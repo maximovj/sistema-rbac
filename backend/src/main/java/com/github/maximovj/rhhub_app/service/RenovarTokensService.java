@@ -1,10 +1,12 @@
 package com.github.maximovj.rhhub_app.service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import com.github.maximovj.rhhub_app.config.properties.CookieRefreshTokenProperties;
@@ -48,26 +50,30 @@ public class RenovarTokensService {
         return !token.estaSuspendido() && token.getFechaDeExpiracion().isAfter(Instant.now());
     }
 
-    public Cookie getCookie(RenovarTokensEntity token) {
-        // Configurar nueva cookie
-        Cookie refreshTokenCookie = new Cookie(cookieRefreshTokenProperties.getName(), token.getToken());
-        refreshTokenCookie.setHttpOnly(cookieRefreshTokenProperties.isHttpOnly());
-        refreshTokenCookie.setSecure(cookieRefreshTokenProperties.isSecure());
-        refreshTokenCookie.setPath(cookieRefreshTokenProperties.getPath());
-        refreshTokenCookie.setMaxAge(token.isRecuerdame() ? cookieRefreshTokenProperties.getMaxAge() : 0);
-        refreshTokenCookie.setAttribute("SameSite", cookieRefreshTokenProperties.getSameSite());
-        return refreshTokenCookie;
+    public ResponseCookie getCookie(RenovarTokensEntity token) {
+        return ResponseCookie.from(cookieRefreshTokenProperties.getName(), token.getToken())
+                .httpOnly(cookieRefreshTokenProperties.isHttpOnly())
+                .secure(cookieRefreshTokenProperties.isSecure())
+                .path(cookieRefreshTokenProperties.getPath())
+                .sameSite(cookieRefreshTokenProperties.getSameSite())
+                .maxAge(
+                    token.isRecuerdame()
+                        ? cookieRefreshTokenProperties.getMaxAge()
+                        : Duration.ofHours(2).toMillis() // o el tiempo que dure la sesión
+                )
+                // .domain(cookieRefreshTokenProperties.getDomain()) // SI usas dominio
+                .build();
     }
 
-    public Cookie removeCookie() {
-        // Configurar nueva cookie
-        Cookie refreshTokenCookie = new Cookie(cookieRefreshTokenProperties.getName(), null);
-        refreshTokenCookie.setHttpOnly(cookieRefreshTokenProperties.isHttpOnly());
-        refreshTokenCookie.setSecure(cookieRefreshTokenProperties.isSecure());
-        refreshTokenCookie.setPath(cookieRefreshTokenProperties.getPath());
-        refreshTokenCookie.setMaxAge(0);
-        refreshTokenCookie.setAttribute("SameSite", cookieRefreshTokenProperties.getSameSite());
-        return refreshTokenCookie;
+    public ResponseCookie removeCookie() {
+        return ResponseCookie.from(cookieRefreshTokenProperties.getName(), "")
+                .httpOnly(cookieRefreshTokenProperties.isHttpOnly())
+                .secure(cookieRefreshTokenProperties.isSecure())
+                .path(cookieRefreshTokenProperties.getPath())
+                .sameSite(cookieRefreshTokenProperties.getSameSite())
+                .maxAge(0)
+                // .domain(cookieRefreshTokenProperties.getDomain())
+                .build();
     }
 
     @Transactional
