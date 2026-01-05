@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/common/stores/authStore';
 import { useAlertStore } from '@/common/stores/alertStore';
+import autenticacionService from '@/common/services/autenticacion.service';
 
 // Referencias computadas
+const router = useRouter();
 const route = useRoute();
 const showIconToolbar = ref(false);
 
@@ -17,13 +19,14 @@ const salir =  async () =>  {
     const alert = useAlertStore();
     const desicion = await alert.confirm({ 
     message: '¿Seguro que deseas salir?',
-    buttons: {visible: ["yes", "cancel"] } 
+    buttons: {visible: ["yes", "cancel"] }
     });
 
     if(desicion == 'yes') {
-        const auth = useAuthStore();
-        await auth.logout();
-        window.location.href = "/";
+        const res = await autenticacionService.logout();
+        console.log("CabaceraPorDefecto.vue::res",{ res });
+
+        router.push('/');
     }
 };
 

@@ -1,5 +1,6 @@
 // common/api/api.js
 import axios from 'axios'
+import { useRouter } from 'vue-router';
 import { useSettingsStore } from '@/common/stores/settingsStore'
 import { useAuthStore } from '@/common/stores/authStore'
 import autenticacionService from '../services/autenticacion.service'
@@ -21,47 +22,59 @@ api.interceptors.request.use((config) => {
 
 // 👉 Refresh automático si expira
 let refreshing = false
+let config_retry = false;
 let queue = []
 
 // ---------------- RESPONSE ----------------
 api.interceptors.response.use(
-  res => res,
-  async error => {
-    const auth = useAuthStore()
-    const original = error.config
+  success => {
+    console.log("api.interceptors.response.use", {success, config: success.config});
+    return Promise.resolve(success);
+  }, 
+  async e => {
+    const { config, response } = e;
 
-    if (error.response?.status === 401 && !original._retry) {
+    if (response?.status === 401 && !config_retry) {
       if (refreshing) {
         return new Promise(resolve => {
           queue.push(token => {
-            original.headers.Authorization = `Bearer ${token}`
-            resolve(api(original))
+            config.headers.Authorization = `Bearer ${token}`
+            resolve(api(config))
           })
         })
       }
 
-      original._retry = true
-      refreshing = true
+      config_retry = true;
+      refreshing = true;
 
       try {
-        const { data } = await autenticacionService.refresh();
+        const resRefresh = await autenticacionService.refresh();
+        
+        if(resRefresh?.data) {
+          const resRefreshData = resRefresh?.data;
+          const acceso_token = resRefreshData?.contenido?.acceso_token;
 
-        const acceso_token = data?.contenido?.acceso_token;
-        auth.acceso_token = acceso_token;
-        queue.forEach(cb => cb(acceso_token))
-        queue = []
+          const auth = useAuthStore();
+          auth.acceso_token = acceso_token;
+          queue.forEach(cb => cb(acceso_token))
+          queue = []
 
-        return api(original)
+          return api(original)
+        }
       } catch (e) {
-        auth.logout()
-        window.location.href = '/acceder'
+        console.log("apiAxios.js::e", {e});
+        const auth = useAuthStore();
+        await auth.logout();
+
+        const router = useRouter();
+        router.push('/acceder');
       } finally {
         refreshing = false
       }
     }
 
-    return Promise.reject(error)
-  }
-)
+    console.log("api.interceptors.response.use", {e, config, response});
+    return Promise.reject(e);
+});
 
 export default api

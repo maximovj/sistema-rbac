@@ -43,6 +43,7 @@ router.beforeEach(async (to, from, next) => {
       await auth.init()
       auth.inicializado = true
     } catch (error) {
+      auth.inicializado = true;
       console.error('Error inicializando autenticación:', error)
     }
   }

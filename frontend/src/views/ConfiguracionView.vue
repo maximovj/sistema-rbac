@@ -124,8 +124,10 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/common/stores/authStore';
 import { useAlertStore } from '@/common/stores/alertStore';
+import autenticacionService from '@/common/services/autenticacion.service';
 
 export default {
   data() {
@@ -134,17 +136,19 @@ export default {
     }
   },
   methods: {
-    async salir() { 
+    async salir() {
       const alert = useAlertStore();
       const desicion = await alert.confirm({ 
-        message: '¿Seguro que deseas salir?',
-        buttons: {visible: ["yes", "cancel"] } 
+      message: '¿Seguro que deseas salir?',
+      buttons: {visible: ["yes", "cancel"] } 
       });
 
       if(desicion == 'yes') {
-        const auth = useAuthStore();
-        await auth.logout();
-        window.location.href = "/";
+          const res = await autenticacionService.logout();
+          console.log("ConfiguracionView.vue::res",{ res });
+
+          const router = useRouter();
+          router.push('/');
       }
     }
   },

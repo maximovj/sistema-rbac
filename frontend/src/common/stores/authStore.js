@@ -29,29 +29,40 @@ export const useAuthStore = defineStore('auth', {
       if(this.inicializado && settings.recuerdame) return;
       
       try {
-        if(settings.recuerdame) {
+        if(settings.recuerdame || settings.usuario) {
           const renovarToken = await autenticacionService.refresh();
+          console.log("authStore.js", {renovarToken});
           
           if(renovarToken.status == 200) {
             const { contenido } = renovarToken.data;
             
             this.loguearse(
               contenido?.acceso_token,
-              contenido?.info_usuario,
+              contenido?.info_usuario
             );
 
             settings.recuerdame = true;
           }
+
         }
       } catch (e) {
         console.log("authStore.js hubo un error: ",e);
-        await this.logout();
+        await autenticacionService.logout();
+        const alert = useAlertStore();
+        await alert.alert({
+          title: 'AVISO',
+          message: 'Desloguerse (p. 1)',
+        });
       } finally {
         this.inicializado = true;
       }
     },
 
     loguearse(acceso_token, usuario_info) {
+      const settings = useSettingsStore();
+      settings.recuerdame = usuario_info?.recuerdame;
+      settings.usuario = usuario_info?.usuario;
+
       this.acceso_token = acceso_token;
       this.usuario_id = usuario_info?.usuario_id;
       this.usuario = usuario_info?.usuario;
@@ -61,10 +72,14 @@ export const useAuthStore = defineStore('auth', {
     },
 
     desloguearse() {
-      this.$reset()
+      this.$reset();
+
+      const settings = useSettingsStore();
+      settings.$reset();
     },
 
     async logout() {
+      console.log("authStore.js hubo un error....");
       await autenticacionService.logout();
       this.$reset();
 
