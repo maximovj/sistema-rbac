@@ -31,7 +31,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         if(settings.recuerdame || settings.usuario) {
           const renovarToken = await autenticacionService.refresh();
-          console.log("authStore.js", {renovarToken});
           
           if(renovarToken.status == 200) {
             const { contenido } = renovarToken.data;
@@ -46,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
 
         }
       } catch (e) {
-        console.log("authStore.js hubo un error: ",e);
+        console.log("Hubo un error","authStore.js::init",{e});
         await autenticacionService.logout();
         const alert = useAlertStore();
         await alert.alert({
@@ -79,7 +78,6 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-      console.log("authStore.js hubo un error....");
       await autenticacionService.logout();
       this.$reset();
 

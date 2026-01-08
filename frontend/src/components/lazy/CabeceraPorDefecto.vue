@@ -23,9 +23,7 @@ const salir =  async () =>  {
     });
 
     if(desicion == 'yes') {
-        const res = await autenticacionService.logout();
-        console.log("CabaceraPorDefecto.vue::res",{ res });
-
+        await autenticacionService.logout();
         router.push('/');
     }
 };

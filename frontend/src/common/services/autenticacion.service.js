@@ -40,11 +40,9 @@ class AutenticacionService extends BaseService {
     const auth = useAuthStore();
     const ui = useUiStore();
     ui.loading = true;
-    console.log("cerrando sesión...");
 
     return this.custom('post', '/logout', settings.usuario, { headers: { 'Content-Type': 'text/plain' } })
-      .then((r) => console.log("autentication.service.js::logout", {r}))
-      .catch((e) => console.log("autentication.service.js::logout", {e}))
+      .catch((e) => console.log("Hubo un error","autentication.service.js::logout", {e}))
       .finally(() => {
         auth.desloguearse();
         ui.loading = false;
@@ -65,10 +63,7 @@ class AutenticacionService extends BaseService {
         return res
     })
     .catch( async err => {
-      console.log("autentication.service.js::refresh", {err});
-      
-      // TODO: Pasarlo a catch
-      console.log("autenticacion.service.js::logout linea 71", {});
+      console.log("Hubo un error","autentication.service.js::refresh", {err});
       await this.logout();
       const auth = useAuthStore();
       auth.desloguearse();

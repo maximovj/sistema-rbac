@@ -40,7 +40,7 @@ router.beforeEach(async (to, from, next) => {
   // Si la autenticación no está inicializada, inicializarla
   if (!auth.inicializado) {
     try {
-      await auth.init()
+      await auth.init("router>index.js::beforeEach : Inicializar datos...")
       auth.inicializado = true
     } catch (error) {
       auth.inicializado = true;

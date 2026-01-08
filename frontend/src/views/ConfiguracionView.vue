@@ -144,9 +144,7 @@ export default {
       });
 
       if(desicion == 'yes') {
-          const res = await autenticacionService.logout();
-          console.log("ConfiguracionView.vue::res",{ res });
-
+          await autenticacionService.logout();
           const router = useRouter();
           router.push('/');
       }

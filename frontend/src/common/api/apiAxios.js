@@ -28,7 +28,6 @@ let queue = []
 // ---------------- RESPONSE ----------------
 api.interceptors.response.use(
   success => {
-    console.log("api.interceptors.response.use", {success, config: success.config});
     return Promise.resolve(success);
   }, 
   async e => {
@@ -62,7 +61,7 @@ api.interceptors.response.use(
           return api(original)
         }
       } catch (e) {
-        console.log("apiAxios.js::e", {e});
+        console.log("Hubo un error" ,"apiAxios.js::e", {e});
         const auth = useAuthStore();
         await auth.logout();
 
@@ -72,8 +71,6 @@ api.interceptors.response.use(
         refreshing = false
       }
     }
-
-    console.log("api.interceptors.response.use", {e, config, response});
     return Promise.reject(e);
 });
 
