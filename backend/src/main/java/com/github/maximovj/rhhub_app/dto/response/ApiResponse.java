@@ -2,6 +2,7 @@ package com.github.maximovj.rhhub_app.dto.response;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +29,11 @@ public class ApiResponse<T> {
     public static ResponseEntity<?> ok(String message, Object data) {
         HttpStatus status = HttpStatus.OK;
         return ResponseEntity.ok(new ApiResponseSuccess<Object>(status, message, data));
+    }
+
+    public ResponseEntity<?> okPage(String message, Page<T> data) {
+        HttpStatus status = HttpStatus.OK;
+        return ResponseEntity.ok(new ApiResponseSuccessPage<>(status, message, data));
     }
 
     public static ResponseEntity<?> created(String message, Object data) {
