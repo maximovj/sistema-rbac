@@ -38,7 +38,7 @@ public class UsuarioGruposSeeder implements ApplicationRunner {
         
         if(this.seederProperties.isEnabled() == false) return;
 
-        if(!gruposRepository.existsByNombre("ADMINISTRADOR")) {
+        if(!gruposRepository.existsByNombre("SUPER_ADMINISTRADOR")) {
 
             // Obtener todos los permisos existentes para el ADMIN
             Set<UsuarioPermisosEntity> todosPermisos = new HashSet<>(
@@ -47,7 +47,7 @@ public class UsuarioGruposSeeder implements ApplicationRunner {
 
             // Crear grupo para administradores
             UsuarioGruposEntity grupo = UsuarioGruposEntity.builder()
-            .nombre("ADMINISTRADOR")
+            .nombre("SUPER_ADMINISTRADOR")
             .descripcion("GRUPO CON TODOS LOS PERMISOS")
             .esActivo(true)
             .rol(null)
@@ -56,7 +56,7 @@ public class UsuarioGruposSeeder implements ApplicationRunner {
 
             if(grupo != null){
                 gruposRepository.save(grupo); 
-                System.out.println("grupo ADMINISTRADOR fue creado correctamente.");
+                System.out.println("grupo SUPER_ADMINISTRADOR fue creado correctamente.");
             }
         }
     }

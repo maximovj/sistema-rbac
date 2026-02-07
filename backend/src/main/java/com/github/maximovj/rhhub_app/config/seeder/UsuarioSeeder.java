@@ -51,7 +51,7 @@ public class UsuarioSeeder implements ApplicationRunner {
         if(!usuarioRepository.existsByUsuario("ADMIN")) {
 
             Optional<UsuarioEstadoEntity> estado = usuarioEstadoRepository.findByEstado("CREADA");
-            Optional<UsuarioGruposEntity> grupo =  gruposRepository.findByNombre("ADMINISTRADOR");
+            Optional<UsuarioGruposEntity> grupo =  gruposRepository.findByNombre("SUPER_ADMINISTRADOR");
 
             if(estado.isEmpty() || grupo.isEmpty()) {
                 return;

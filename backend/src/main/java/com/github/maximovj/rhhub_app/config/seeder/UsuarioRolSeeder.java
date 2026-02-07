@@ -41,21 +41,21 @@ public class UsuarioRolSeeder implements ApplicationRunner {
         
         if(this.seederProperties.isEnabled() == false) return;
 
-        if(!rolRepository.existsByRolNombre("ADMIN")) {
+        if(!rolRepository.existsByRolNombre("ROOT")) {
             crearRolUsuarioAdministrador();
         }
 
     }
 
     private void crearRolUsuarioAdministrador() {
-        Optional<UsuarioGruposEntity> grupo = gruposRepository.findByNombre("ADMINISTRADOR");
+        Optional<UsuarioGruposEntity> grupo = gruposRepository.findByNombre("SUPER_ADMINISTRADOR");
 
         if(!grupo.isPresent())  return;
         UsuarioGruposEntity grupoAdmin = grupo.get();
         
         // Crear el rol ADMIN
         UsuarioRolEntity rolAdmin = UsuarioRolEntity.builder()
-            .rolNombre("ADMIN")
+            .rolNombre("ROOT")
             .rolDescripcion("Rol de administrador del sistema")
             .rolEsAdministrador(true)
             .esActivo(true)
