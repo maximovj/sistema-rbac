@@ -1,11 +1,12 @@
 <script setup>
-import { ref, defineProps, watch } from "vue";
-import { onMounted, onUpdated, onUnmounted } from "vue";
+import { ref, defineProps, watch, computed } from "vue";
 import usuariosService from "@/common/services/usuarios.service";
 import { useAlertStore } from "@/common/stores/alertStore";
 
 import { scopedLogger } from "@/common/utils/loggerUtils";
 const logger = scopedLogger("EditarUsuarios.vue");
+
+import accion from "@/common/acciones/usuarios.acciones";
 
 const props = defineProps({
     usuarioId: {
@@ -34,17 +35,9 @@ function resetData() {
   data.value = createInitialState();
 }
 
-onMounted(async () => {
-    logger.info("onMounted","Componente montado");
-});
+const esAdmin = computed(() => data.value?.usuario?.grupo?.rol?.rol_es_administrador);
 
-onUpdated(() => {
-  logger.info("onUpdated","Componente actualizado");
-});
-
-onUnmounted(() => {
-  logger.info("onUnmounted","Componente destruido");
-});
+const habilitarCampos = computed(() => !accion.value.root && esAdmin.value || !data.value.usuario.es_activo && accion.value.update);
 
 const fnGuardar = async () => {
     const useAlert = useAlertStore();
@@ -59,6 +52,10 @@ const fnGuardar = async () => {
     });
 
     if(confirmar == 'yes') {
+
+        data.value.usuario.contrasena = data.value.usuario?.contrasena?.trim() || null;
+        data.value.usuario.confirmar_contrasena = data.value.usuario?.confirmar_contrasena?.trim() || null;
+
         try {
             data.value.cargandoDatos = true;
             const res = await usuariosService.update(data.value.usuario.usuario_id, data.value.usuario);
@@ -107,7 +104,6 @@ watch(() => data.value.visible, async (isVisible) => {
     if(res.data?.exitosa) {
         data.value.usuario = res.data?.contenido;
         logger.info("watch::if", "data.value.usuario", data.value.usuario);
-        //data.value.tituloCabecera = "Usuario: " + data.value.usuario.usuario;
         data.value.grupoSeleccionado = data.value.usuario?.grupo?.usuario_grupo_id;
     } else {
         data.value.visible = false;
@@ -118,7 +114,13 @@ watch(() => data.value.visible, async (isVisible) => {
 </script>
 
 <template>
-        <Button icon="pi pi-pencil" class="p-button-text p-button-warning mr-2" @click="data.visible = true"  />
+        <Button 
+            v-show="accion.update" 
+            :disabled="esAdmin || !accion.update"
+            icon="pi pi-pencil"
+            class="p-button-text p-button-warning mr-2" 
+            @click="() => { if(accion.update) data.visible = true; }" />
+
         <Dialog
             v-model:visible="data.visible"
             modal
@@ -136,6 +138,7 @@ watch(() => data.value.visible, async (isVisible) => {
                     v-else
                     id="usuario"
                     class="flex-auto"
+                    :disabled="habilitarCampos"
                     v-model="data.usuario.usuario"
                 />
                 </CustomField>
@@ -146,6 +149,7 @@ watch(() => data.value.visible, async (isVisible) => {
                     v-else
                     id="correo"
                     class="flex-auto"
+                    :disabled="habilitarCampos"
                     v-model="data.usuario.correo"
                 />
                 </CustomField>
@@ -156,7 +160,7 @@ watch(() => data.value.visible, async (isVisible) => {
 
                 <CustomField label="¿Es activo?">
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
-                <ToggleSwitch :disabled="true" v-else v-model="data.usuario.es_activo" />
+                <ToggleSwitch :disabled="esAdmin" v-else v-model="data.usuario.es_activo" />
                 </CustomField>
 
                 
@@ -164,7 +168,7 @@ watch(() => data.value.visible, async (isVisible) => {
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
                 <Select
                     v-else
-                    :disabled="!data.usuario.es_activo"
+                    :disabled="habilitarCampos"
                     v-model="data.grupoSeleccionado"
                     :options="data.grupos"
                     optionValue="code"
@@ -178,7 +182,7 @@ watch(() => data.value.visible, async (isVisible) => {
                     v-else
                     id="rol"
                     class="flex-auto"
-                    :disabled="true"
+                    :disabled="esAdmin || !data.usuario.es_activo"
                     v-model="data.usuario.grupo.nombre"
                 />
                 </CustomField>
@@ -189,24 +193,24 @@ watch(() => data.value.visible, async (isVisible) => {
                     v-else
                     id="rol"
                     class="flex-auto"
-                    :disabled="true"
+                    :disabled="esAdmin || !data.usuario.es_activo"
                     v-model="data.usuario.grupo.rol.rol_nombre"
                 />
                 </CustomField>
 
                 <CustomField label="Contraseña">
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
-                <Password v-else v-model="data.usuario.contrasena" toggleMask />
+                <Password v-else :disabled="habilitarCampos" v-model="data.usuario.contrasena" toggleMask />
                 </CustomField>
 
                 <CustomField label="Confirmar contraseña">
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
-                <Password v-else v-model="data.usuario.confirmar_contrasena" toggleMask />
+                <Password v-else :disabled="habilitarCampos" v-model="data.usuario.confirmar_contrasena" toggleMask />
                 </CustomField>
 
                 <template  v-if="!data.cargandoDatos" #footer>
                     <Button type="button" label="Cancelar" severity="secondary" @click="data.visible = false"></Button>
-                    <Button type="button" label="Guardar" @click="fnGuardar"></Button>
+                    <Button :disabled="esAdmin || !accion.update" type="button" label="Guardar" @click="fnGuardar"></Button>
                 </template>
         </Dialog>
 </template>

@@ -14,14 +14,36 @@ export const useAuthStore = defineStore('auth', {
     usuario: null,
     grupo: null,
     rol: null,
+    esAdmin: false,
     permisos: [],
 
     inicializado: false,
   }),
 
   getters: {
-    estaAutenticado: (state) => !!state.acceso_token,
-    esAdministrador: (state) => state.rol === 'ADMIN',
+    estaAutenticado(state) {
+      return !!state.acceso_token
+    },
+
+    esSuperAdministrador(state) {
+      return false //state.esAdmin
+    },
+
+    hasPermiso(state) {
+      return (modulo, accion) => {
+        // Super admin: acceso total
+        if (this.esSuperAdministrador) return true;
+
+        return (
+          Array.isArray(state.permisos) &&
+          state.permisos.some(
+            p =>
+              p.permiso_modulo === modulo &&
+              p.permiso_accion === accion
+          )
+        )
+      }
+    }
   },
 
   actions: {
@@ -68,6 +90,7 @@ export const useAuthStore = defineStore('auth', {
       settings.usuario = usuario_info?.usuario;
 
       this.acceso_token = acceso_token;
+      this.esAdmin = usuario_info?.es_admin;
       this.usuario_id = usuario_info?.usuario_id;
       this.usuario = usuario_info?.usuario;
       this.grupo = usuario_info?.grupo;

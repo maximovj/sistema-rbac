@@ -44,7 +44,7 @@ class AutenticacionService extends BaseService {
     const ui = useUiStore();
     ui.loading = true;
 
-    return await this.custom('post', '/logout', settings.usuario, { headers: { 'Content-Type': 'text/plain' } })
+    return await this.custom('post', '/logout', {usuario: settings.usuario})
       .catch((e) => logger.error("logout", {e}))
       .finally(() => {
         auth.desloguearse();

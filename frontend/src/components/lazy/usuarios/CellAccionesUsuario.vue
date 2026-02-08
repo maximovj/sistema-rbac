@@ -11,5 +11,4 @@ const eliminar = () => { logger.info("eliminar", "row.usuario_id", row.usuario_i
 
 <template>
   <EditarUsuarios :usuarioId="row.usuario_id" />
-  <Button icon="pi pi-trash" class="p-button-text p-button-danger" />
 </template>
