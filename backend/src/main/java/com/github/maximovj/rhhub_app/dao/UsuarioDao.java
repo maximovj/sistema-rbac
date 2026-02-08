@@ -56,27 +56,39 @@ public class UsuarioDao {
 
     @Transactional
     public UsuarioEntity putUsuarioPorUsuarioId(Long usuario_id, UsuarioRequest req) {
+        log.info("request recibido: {}", req.toString());
+
         Objects.requireNonNull(usuario_id);
         UsuarioEntity entidad = this.usuarioRepository.findById(usuario_id).orElse(null);
         if(entidad == null) {
             return null;
         }
 
-        if(req.getUsuario() != null && !req.getUsuario().isEmpty()) { 
+        if(req.getEs_activo() != null) { 
+            entidad.setEsActivo(req.getEs_activo());
+        }
+
+        if(req.getUsuario() != null && !req.getUsuario().isBlank()) { 
             entidad.setUsuario(req.getUsuario());
         }
 
-        if(req.getCorreo() != null && !req.getCorreo().isEmpty()) { 
+        if(req.getCorreo() != null && !req.getCorreo().isBlank()) { 
             entidad.setCorreo(req.getCorreo());
         }
 
-        if(
-            req.getConfirmar_contrasena() != null && 
-            req.getContrasena() != null && 
-            !req.getContrasena().isEmpty() &&
-            !req.getConfirmar_contrasena().isEmpty() &&
-            req.getContrasena().equals(req.getConfirmar_contrasena())) {
-            entidad.setContrasena(passwordEncoder.encode(req.getContrasena()));
+        if (
+            req.getContrasena() != null &&
+            req.getConfirmar_contrasena() != null &&
+            !req.getContrasena().trim().isBlank() &&
+            !req.getConfirmar_contrasena().trim().isBlank() &&
+            req.getContrasena().trim().length() >= 8 &&
+            req.getConfirmar_contrasena().trim().length() >= 8 &&
+            req.getContrasena().trim().length() <= 30 &&
+            req.getConfirmar_contrasena().trim().length() <= 30 &&
+            req.getContrasena().trim().equals(req.getConfirmar_contrasena().trim())
+        ) {
+            log.info("Contraseña actualizada: {}" , req.getConfirmar_contrasena());
+            entidad.setContrasena(passwordEncoder.encode(req.getConfirmar_contrasena().trim()));
         }
 
         this.usuarioRepository.save(entidad);

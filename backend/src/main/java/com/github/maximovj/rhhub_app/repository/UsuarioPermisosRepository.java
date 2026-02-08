@@ -4,16 +4,22 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.github.maximovj.rhhub_app.entity.UsuarioPermisosEntity;
+import com.github.maximovj.rhhub_app.entity.PermisosEntity;
+
+import java.util.Collection;
 import java.util.List;
 
 
-public interface UsuarioPermisosRepository extends JpaRepository<UsuarioPermisosEntity, Long> {
+public interface UsuarioPermisosRepository extends JpaRepository<PermisosEntity, Long> {
 
     boolean existsByPermisoAccion(String permisoAccion);
 
-    Optional<UsuarioPermisosEntity> findByPermisoAccion(String permisoAccion);
+    Optional<PermisosEntity> findByPermisoAccion(String permisoAccion);
 
-    List<UsuarioPermisosEntity> findByPermisoModulo(String permisoModulo);
+    List<PermisosEntity> findByPermisoModulo(String permisoModulo);
+
+    List<PermisosEntity> findByPermisoAccionIn(Collection<String> permisoAccion);
+
+    List<PermisosEntity> findByPermisoModuloIn(Collection<String> permisoModulo);
 
 }
