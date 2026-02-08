@@ -81,25 +81,25 @@ public class UsuarioGruposEntity {
     // Un Grupo puede tener muchos Permisos
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "TBL_GRUPO_PERMISOS",
+        name = "TBL_USUARIO_GRUPO_PERMISO",
         joinColumns = @JoinColumn(name = "USUARIO_GRUPO_ID"),
-        inverseJoinColumns = @JoinColumn(name = "USUARIO_PERMISOS_ID"),
+        inverseJoinColumns = @JoinColumn(name = "PERMISO_ID"),
         uniqueConstraints = @UniqueConstraint(
-            columnNames = {"USUARIO_GRUPO_ID", "USUARIO_PERMISOS_ID"}
+            columnNames = {"USUARIO_GRUPO_ID", "PERMISO_ID"}
         )
     )
     @Builder.Default
     @JsonIgnore
     //@JsonIgnoreProperties({"grupos", "hibernateLazyInitializer", "handler"}) // <-- CORREGIDO: "grupos" en lugar de "permisos"
-    private Set<UsuarioPermisosEntity> permisos = new HashSet<>();
+    private Set<PermisosEntity> permisos = new HashSet<>();
 
     // Métodos helper corregidos
-    public void addPermiso(UsuarioPermisosEntity permiso) {
+    public void addPermiso(PermisosEntity permiso) {
         this.permisos.add(permiso);
         permiso.getGrupos().add(this); // <-- IMPORTANTE: mantener consistencia bidireccional
     }
     
-    public void removePermiso(UsuarioPermisosEntity permiso) {
+    public void removePermiso(PermisosEntity permiso) {
         this.permisos.remove(permiso);
         permiso.getGrupos().remove(this); // <-- IMPORTANTE: mantener consistencia bidireccional
     }

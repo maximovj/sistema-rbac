@@ -35,20 +35,20 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(
-    name = "TBL_USUARIO_PERMISOS",
+    name = "TBL_PERMISOS",
     uniqueConstraints = {
         @UniqueConstraint(
-            columnNames = {"PERMISO_ACCION", "USUARIO_GRUPO_ID"}
+            columnNames = {"PERMISO_ACCION", "PERMISO_MODULO"}
         )
     }
 )
-public class UsuarioPermisosEntity {
+public class PermisosEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USUARIO_PERMISOS_ID", nullable = false, unique = true)
-    @JsonProperty("usuario_permisos_id")
-    private Long usuarioPermisosId;
+    @Column(name = "PERMISO_ID", nullable = false, unique = true)
+    @JsonProperty("permiso_id")
+    private Long permisoId;
 
     @Column(name = "PERMISO_ACCION", nullable = false, unique = true)
     @JsonProperty("permiso_accion")
@@ -58,11 +58,6 @@ public class UsuarioPermisosEntity {
     @JsonProperty("permiso_modulo")
     private String permisoModulo;
 
-    @Column(name = "ES_PERMITIDO", nullable = false, unique = false)
-    @JsonProperty(value = "es_permitido", defaultValue = "false")
-    @Builder.Default
-    private Boolean esPermitido = false;
-
     // !! RELACIONES CORREGIDAS
 
     // Un permiso puede estar en muchos grupos
@@ -70,13 +65,5 @@ public class UsuarioPermisosEntity {
     @Builder.Default
     @JsonIgnore
     private Set<UsuarioGruposEntity> grupos = new HashSet<>();
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "USUARIO_PERMISO_ESTADO_ID",
-        referencedColumnName = "USUARIO_PERMISO_ESTADO_ID"
-    )
-    @JsonIgnore
-    private UsuarioPermisoEstadoEntity estado;
     
 }
