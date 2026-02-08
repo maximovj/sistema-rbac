@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.github.maximovj.rhhub_app.config.properties.SeederProperties;
 import com.github.maximovj.rhhub_app.entity.UsuarioPermisoEstadoEntity;
-import com.github.maximovj.rhhub_app.entity.UsuarioPermisosEntity;
+import com.github.maximovj.rhhub_app.entity.PermisosEntity;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisoEstadoRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisosRepository;
 
@@ -36,28 +36,60 @@ public class UsuarioPermisosSeeder implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		
         if(this.seederProperties.isEnabled() == false) return;
+        
+        this.permisosModuloUsuarios();
+        this.permisosModuloRoles();
+	}
 
-        if(!repository.existsByPermisoAccion("CRUD_USUARIOS")) {
+    @Transactional
+    private void crearUnPermiso(String strPermiso) {
+        try {
+            if(!repository.existsByPermisoAccion(strPermiso)) {
+                Optional<UsuarioPermisoEstadoEntity> estado = usuarioPermisoEstadoRepository.findByEstado("ACTIVO");
+                if(estado.isPresent()) {
+                    UsuarioPermisoEstadoEntity estado_activo = estado.get();
 
-            Optional<UsuarioPermisoEstadoEntity> estado = usuarioPermisoEstadoRepository.findByEstado("ACTIVO");
-            if(estado.isPresent()) {
-                UsuarioPermisoEstadoEntity estado_activo = estado.get();
-                
-                // Crear el objeto de manera más explícita
-                UsuarioPermisosEntity permiso = UsuarioPermisosEntity.builder()
-                .permisoAccion("CRUD_USUARIOS")  // Esto es un literal, no es null
-                .permisoModulo("MODULO_USUARIOS")
-                .esPermitido(true)
-                .estado(estado_activo)
-                .build();
+                    // Crear el objeto de manera más explícita
+                    PermisosEntity permiso = PermisosEntity.builder()
+                    .permisoAccion(strPermiso)  // Esto es un literal, no es null
+                    .permisoModulo("MODULO_USUARIOS")
+                    .build();
 
-                if(permiso != null) {
-                    repository.save(permiso);
-                    System.out.println("permiso CRUD_USUARIOS fue creado correctamente.");
+                    if(permiso != null) {
+                        repository.save(permiso);
+                        System.out.println("permiso "+strPermiso+" fue creado correctamente.");
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Hubo un error: " + e.getMessage());
         }
+    }
 
-	}
+    private void permisosModuloUsuarios() {
+        String[] permisosModuloUsuarios = {
+            "VIEW_USUARIOS", 
+            "CREATE_USUARIOS", 
+            "READ_USUARIOS", 
+            "UPDATE_USUARIOS", 
+            "DELETE_USUARIOS"};
+
+        for (String string : permisosModuloUsuarios) {
+            this.crearUnPermiso(string);
+        }
+    }
+
+    private void permisosModuloRoles() {
+        String[] permisosModuloRoles = {
+            "VIEW_ROLES", 
+            "CREATE_ROLES", 
+            "READ_ROLES", 
+            "UPDATE_ROLES", 
+            "DELETE_ROLES"};
+
+        for (String string : permisosModuloRoles) {
+            this.crearUnPermiso(string);
+        }
+    }
 
 }

@@ -45,33 +45,78 @@ public class UsuarioSeeder implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         
         if(this.seederProperties.isEnabled() == false) return;
-        
-        UsuarioEntity entidad = null;
 
-        if(!usuarioRepository.existsByUsuario("ADMIN")) {
-
-            Optional<UsuarioEstadoEntity> estado = usuarioEstadoRepository.findByEstado("CREADA");
-            Optional<UsuarioGruposEntity> grupo =  gruposRepository.findByNombre("SUPER_ADMINISTRADOR");
-
-            if(estado.isEmpty() || grupo.isEmpty()) {
-                return;
-            }
-
-            entidad = UsuarioEntity.builder()
-            .usuario("admin")
-            .correo("admin@admin.com")
-            .contrasena(passwordEncoder.encode("admin@admin.com"))
-            .esActivo(true)
-            .token(null)
-            .estado(estado.get())
-            .grupo(grupo.get())
-            .build();
-
-            if(entidad != null) {
-                usuarioRepository.save(entidad);
-                System.out.println("usuario ADMIN fue creado correctamente.");
-            }
+        if(!usuarioRepository.existsByUsuario("admin")) {
+            this.crearUsuario(
+                "admin",
+                "admin@admin.com",
+                "admin@admin.com",
+                "CREADA",
+                "SUPER_ADMINISTRADOR"
+            );
         }
+
+        if(!usuarioRepository.existsByUsuario("usuarios")) {
+            this.crearUsuario(
+                "usuarios",
+                "usuarios@demo.com",
+                "1",
+                "CREADA",
+                "MOD_USUARIOS"
+            );
+        }
+
+        if(!usuarioRepository.existsByUsuario("demo")) {
+            this.crearUsuario(
+                "demo",
+                "demo@demo.com",
+                "1",
+                "CREADA",
+                "INVITADO"
+            );
+        }
+
+    }
+
+    @Transactional
+    private void crearUsuario(
+            String username,
+            String correo,
+            String passwordPlano,
+            String estadoNombre,
+            String grupoNombre
+    ) {
+        if (usuarioRepository.existsByUsuario(username)) {
+            return;
+        }
+
+        Optional<UsuarioEstadoEntity> estadoOpt =
+                usuarioEstadoRepository.findByEstado(estadoNombre);
+
+        Optional<UsuarioGruposEntity> grupoOpt =
+                gruposRepository.findByNombre(grupoNombre);
+
+        if (estadoOpt.isEmpty() || grupoOpt.isEmpty()) {
+            System.out.println(
+                "No se pudo crear usuario " + username +
+                ". Estado o grupo no encontrado."
+            );
+            return;
+        }
+
+        UsuarioEntity usuario = UsuarioEntity.builder()
+                .usuario(username)
+                .correo(correo)
+                .contrasena(passwordEncoder.encode(passwordPlano))
+                .esActivo(true)
+                .token(null)
+                .estado(estadoOpt.get())
+                .grupo(grupoOpt.get())
+                .build();
+
+        usuarioRepository.save(usuario);
+
+        System.out.println("Usuario " + username + " creado correctamente.");
     }
 
 }

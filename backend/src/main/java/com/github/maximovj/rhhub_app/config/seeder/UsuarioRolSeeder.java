@@ -41,42 +41,64 @@ public class UsuarioRolSeeder implements ApplicationRunner {
         
         if(this.seederProperties.isEnabled() == false) return;
 
-        if(!rolRepository.existsByRolNombre("ROOT")) {
-            crearRolUsuarioAdministrador();
+        if (!rolRepository.existsByRolNombre("ROOT")) {
+            crearRol(
+                "ROOT",
+                "Rol de administrador del sistema",
+                true,
+                "SUPER_ADMINISTRADOR"
+            );
+        }
+
+        if (!rolRepository.existsByRolNombre("MOD_USUARIOS")) {
+            crearRol(
+                "MOD_USUARIOS",
+                "Rol solo crear usuarios del sistema",
+                false,
+                "MOD_USUARIOS"
+            );
+        }
+
+        if (!rolRepository.existsByRolNombre("GUEST")) {
+            crearRol(
+                "GUEST",
+                "Rol de invitado del sistema",
+                false,
+                "INVITADO"
+            );
         }
 
     }
 
-    private void crearRolUsuarioAdministrador() {
-        Optional<UsuarioGruposEntity> grupo = gruposRepository.findByNombre("SUPER_ADMINISTRADOR");
+    @Transactional
+    private void crearRol(
+            String nombreRol,
+            String descripcion,
+            boolean esAdministrador,
+            String nombreGrupo
+    ) {
+        Optional<UsuarioGruposEntity> grupoOpt = gruposRepository.findByNombre(nombreGrupo);
 
-        if(!grupo.isPresent())  return;
-        UsuarioGruposEntity grupoAdmin = grupo.get();
-        
-        // Crear el rol ADMIN
-        UsuarioRolEntity rolAdmin = UsuarioRolEntity.builder()
-            .rolNombre("ROOT")
-            .rolDescripcion("Rol de administrador del sistema")
-            .rolEsAdministrador(true)
-            .esActivo(true)
-            .build();
-
-        if(rolAdmin != null) {
-
-            // Asociar grupo al rol (depende de tu modelo de datos)
-            // Si Rol tiene relación con Grupos:
-            rolAdmin.addGrupo(grupoAdmin);
-
-            // O si Grupo tiene relación con Rol:
-            //grupoAdmin.setRol(rolAdmin);
-            
-            // Guardar (el orden depende de tus cascades)
-            //gruposRepository.save(grupoAdmin);
-            rolRepository.save(rolAdmin);
-
-            int numPermisos = grupoAdmin.getPermisos().size();
-            System.out.println("Rol ADMIN y grupo ADMINISTRADORES creados con " + numPermisos + " permisos");
+        if (!grupoOpt.isPresent()) {
+            System.out.println("Grupo " + nombreGrupo + " no encontrado. Rol " + nombreRol + " no creado.");
+            return;
         }
+
+        UsuarioGruposEntity grupo = grupoOpt.get();
+
+        UsuarioRolEntity rol = UsuarioRolEntity.builder()
+                .rolNombre(nombreRol)
+                .rolDescripcion(descripcion)
+                .rolEsAdministrador(esAdministrador)
+                .esActivo(true)
+                .build();
+
+        rol.addGrupo(grupo);
+        rolRepository.save(rol);
+
+        int numPermisos = grupo.getPermisos().size();
+        System.out.println("Rol " + nombreRol + " y grupo " + nombreGrupo +
+                " creados con " + numPermisos + " permisos");
     }
     
 }
