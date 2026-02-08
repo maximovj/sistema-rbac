@@ -2,6 +2,7 @@
 import { ref, defineProps, watch } from "vue";
 import { onMounted, onUpdated, onUnmounted } from "vue";
 import usuariosService from "@/common/services/usuarios.service";
+import { useAlertStore } from "@/common/stores/alertStore";
 
 import { scopedLogger } from "@/common/utils/loggerUtils";
 const logger = scopedLogger("EditarUsuarios.vue");
@@ -14,19 +15,23 @@ const props = defineProps({
     }
 });
 
-const initialState = {
-  visible: false,
-  usuario: {},
-  cargandoDatos: false,
-  tituloCabecera: "EDITAR USUARIO",
-  grupoSeleccionado: 1,
-  grupos: [{ name: 'ADMINISTRADOR', code: 1 }]
-};
+function createInitialState() {
+  return {
+    visible: false,
+    usuario: {
+        confirmar_contrasena: '',
+    },
+    cargandoDatos: false,
+    tituloCabecera: "MODIFICAR USUARIO",
+    grupoSeleccionado: 1,
+    grupos: [{ name: 'ADMINISTRADOR', code: 1 }],
+  };
+}
 
-const data = ref({ ...initialState });
+const data = ref(createInitialState());
 
 function resetData() {
-  data.value = { ...initialState };
+  data.value = createInitialState();
 }
 
 onMounted(async () => {
@@ -40,6 +45,54 @@ onUpdated(() => {
 onUnmounted(() => {
   logger.info("onUnmounted","Componente destruido");
 });
+
+const fnGuardar = async () => {
+    const useAlert = useAlertStore();
+
+    const confirmar = await useAlert.confirm({
+        title: 'CONFIRMAR',
+        message: '¿SEGURO QUE DESEAS MODIFICAR LA INFORMACIÓN DEL USUARIO?',
+        buttons: {
+            yes: "SI",
+            no: "NO",
+        }
+    });
+
+    if(confirmar == 'yes') {
+        try {
+            data.value.cargandoDatos = true;
+            const res = await usuariosService.update(data.value.usuario.usuario_id, data.value.usuario);
+            if(res.data?.exitosa) {
+                data.value.usuario.contrasena = '';
+                data.value.usuario.confirmar_contrasena = '';
+
+                await useAlert.alert({
+                    title: data.value.tituloCabecera,
+                    message: res.data?.mensaje || 'Usuario modificado correctamente.',
+                });
+            }
+        } catch (exerr) {
+            logger.error("fnGuardar::catch", {exerr});
+            if(exerr?.response?.data){
+                const errores = exerr.response.data?.errores;
+                const mensajeError = errores ? errores[0]?.context : exerr.response.data?.error; 
+                await useAlert.alert({
+                    title: data.value.tituloCabecera,
+                    message: mensajeError || 'Hubo un error interno en el servidor.',
+                });
+            } else {
+                data.value.visible = false;
+                await useAlert.alert({
+                    title: data.value.tituloCabecera,
+                    message: exerr?.message || 'Hubo un error interno en el servidor.',
+                });
+            }
+        } finally {
+            data.value.cargandoDatos = false;
+        }
+    }
+
+}
 
 watch(() => data.value.visible, async (isVisible) => {
     if (!isVisible) {
@@ -56,6 +109,8 @@ watch(() => data.value.visible, async (isVisible) => {
         logger.info("watch::if", "data.value.usuario", data.value.usuario);
         //data.value.tituloCabecera = "Usuario: " + data.value.usuario.usuario;
         data.value.grupoSeleccionado = data.value.usuario?.grupo?.usuario_grupo_id;
+    } else {
+        data.value.visible = false;
     }
 
     data.value.cargandoDatos = false;
@@ -101,10 +156,11 @@ watch(() => data.value.visible, async (isVisible) => {
 
                 <CustomField label="¿Es activo?">
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
-                <ToggleSwitch v-else v-model="data.usuario.es_activo" />
+                <ToggleSwitch :disabled="true" v-else v-model="data.usuario.es_activo" />
                 </CustomField>
 
-                <CustomField label="Seleccione un grupo">
+                
+                <!-- <CustomField label="Seleccione un grupo">
                 <Skeleton v-if="data.cargandoDatos" width="12rem" />
                 <Select
                     v-else
@@ -114,10 +170,43 @@ watch(() => data.value.visible, async (isVisible) => {
                     optionValue="code"
                     optionLabel="name"
                 />
+                </CustomField> -->
+
+                <CustomField label="Grupo" forId="rol">
+                <Skeleton v-if="data.cargandoDatos" />
+                <InputText
+                    v-else
+                    id="rol"
+                    class="flex-auto"
+                    :disabled="true"
+                    v-model="data.usuario.grupo.nombre"
+                />
                 </CustomField>
-                <template #footer>
+
+                <CustomField label="Rol" forId="rol">
+                <Skeleton v-if="data.cargandoDatos" />
+                <InputText
+                    v-else
+                    id="rol"
+                    class="flex-auto"
+                    :disabled="true"
+                    v-model="data.usuario.grupo.rol.rol_nombre"
+                />
+                </CustomField>
+
+                <CustomField label="Contraseña">
+                <Skeleton v-if="data.cargandoDatos" width="12rem" />
+                <Password v-else v-model="data.usuario.contrasena" toggleMask />
+                </CustomField>
+
+                <CustomField label="Confirmar contraseña">
+                <Skeleton v-if="data.cargandoDatos" width="12rem" />
+                <Password v-else v-model="data.usuario.confirmar_contrasena" toggleMask />
+                </CustomField>
+
+                <template  v-if="!data.cargandoDatos" #footer>
                     <Button type="button" label="Cancelar" severity="secondary" @click="data.visible = false"></Button>
-                    <Button type="button" label="Guardar" @click="data.visible = false"></Button>
+                    <Button type="button" label="Guardar" @click="fnGuardar"></Button>
                 </template>
         </Dialog>
 </template>

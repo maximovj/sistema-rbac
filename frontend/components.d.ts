@@ -26,6 +26,7 @@ declare module 'vue' {
     InfoUsuario: typeof import('./src/components/usuarios/InfoUsuario.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
+    Password: typeof import('primevue/password')['default']
     PlantillaBase: typeof import('./src/components/PlantillaBase.vue')['default']
     PlantillaBaseCentrada: typeof import('./src/components/PlantillaBaseCentrada.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']

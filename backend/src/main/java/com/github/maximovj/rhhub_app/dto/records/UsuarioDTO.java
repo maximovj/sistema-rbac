@@ -10,7 +10,7 @@ public record UsuarioDTO(
     String correo,
     Boolean es_activo,
     String token,
-    UsuarioGruposEntity grupo,
+    UsuarioGruposDTO grupo,
     UsuarioEstadoEntity estado) {
 
     public UsuarioDTO(UsuarioEntity e) {
@@ -19,7 +19,7 @@ public record UsuarioDTO(
             e.getCorreo(),
             e.getEsActivo(),
             e.getToken(),
-            e.getGrupo(),
+            new UsuarioGruposDTO(e.getGrupo()),
             e.getEstado());
     }
 

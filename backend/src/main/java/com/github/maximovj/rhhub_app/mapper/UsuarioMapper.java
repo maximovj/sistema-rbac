@@ -9,5 +9,16 @@ public class UsuarioMapper {
     { 
         return new UsuarioDTO(e);
     }
+
+    public static UsuarioDTO toDTOBasic(UsuarioEntity e) {
+        return new UsuarioDTO(e.getUsuarioId(), 
+            e.getUsuario(), 
+            e.getCorreo(), 
+            e.getEsActivo(), 
+            e.getToken(), 
+            null, 
+            null);
+
+    }
     
 }

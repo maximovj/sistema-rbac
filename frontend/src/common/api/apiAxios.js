@@ -64,8 +64,13 @@ api.interceptors.response.use(
 
           // Redirigir hacia login
           if(!acceso_token) {
-            const router = useRouter();
-            router.replace({ name: 'acceder' });
+            logger.error("response.error::if", {resRefresh});
+            const auth = useAuthStore();
+            await auth.logout();
+
+            //const router = useRouter();
+            //router.replace({ name: 'acceder' });
+            window.location.href = '/acceder';
           }
 
           return api(original)
@@ -76,8 +81,9 @@ api.interceptors.response.use(
         await auth.logout();
 
         // Redirigir hacia login
-        const router = useRouter();
-        router.replace({ name: 'acceder' });
+        //const router = useRouter();
+        //router.replace({ name: 'acceder' });
+        window.location.href = '/acceder';
       } finally {
         refreshing = false
       }
