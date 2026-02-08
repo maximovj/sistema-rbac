@@ -92,10 +92,13 @@
 
     <!-- 📋 Tabla -->
     <GenericDataTable
-      :value="permisos"
-      :filters="filters"
-      v-model:rows="dataTableRows"
-      :loading="cargandoRegistros"
+       :value="permisos"
+        :filters="filters"
+        v-model:rows="dataTableRows"
+        :loading="cargandoRegistros"
+        :totalRecords="totalRecords"
+        :first="first"
+        @page="onPage"
     >
       <Column field="permiso_id" header="ID" sortable style="width: 80px" />
       <Column field="accion" header="Accion" sortable />
@@ -166,6 +169,10 @@ export default {
       cargandoRegistros: false,
 
       dataTableRows: 10,
+      first: 0,
+      totalRecords: 0,
+
+      page: 0,
       
       permisos: [],
 
@@ -224,8 +231,13 @@ export default {
     },
 
     aplicarBusqueda() {
+      this.page = 0
+      this.first = 0
+
       this.filters.accion.value = this.searchForm.accion
       this.filters.modulo.value = this.searchForm.modulo
+
+      this.cargarPermisos()
     },
 
     clearFilters() {
@@ -263,16 +275,32 @@ export default {
       return date.toLocaleDateString()
     },
 
+    onPage(event) {
+      this.page = event.page
+      this.dataTableRows = event.rows
+      this.cargarPermisos()
+    },
+
     async cargarPermisos() {
       this.cargandoRegistros = true;
 
-      await permisosService.getAll()
+      await permisosService.getBuscar({
+          page: this.page,
+          size: this.dataTableRows,
+          accion: this.searchForm.accion,
+          modulo: this.searchForm.modulo
+      })
         .then(response => {
           logger.info('cargarPermisos', 'Permisos cargados:', response.data);
           if(response.data?.exitosa) {
-            const contenido = response.data?.contenido?.content || [];
-            logger.info('cargarPermisos', `Permisos obtenidos: ${contenido.length}`, contenido);
-            this.permisos = contenido;
+            const contenido = response.data?.contenido;
+            const content = response.data?.contenido?.content || [];
+            logger.info('cargarPermisos', `Permisos obtenidos: ${content.length}`, content);
+            
+            this.permisos = content;
+            this.totalRecords = contenido?.totalElements || content.length;
+            this.first = contenido?.page * contenido?.size;
+
           } else {
             logger.warn('cargarPermisos', 'Respuesta exitosa pero sin datos de permisos:', response.data);
           }
