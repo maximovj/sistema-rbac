@@ -30,8 +30,8 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"grupos", "estado"})
-@EqualsAndHashCode(exclude = {"grupos", "estado"})
+@ToString(exclude = {"grupos"})
+@EqualsAndHashCode(exclude = {"grupos"})
 @Builder
 @Entity
 @Table(
