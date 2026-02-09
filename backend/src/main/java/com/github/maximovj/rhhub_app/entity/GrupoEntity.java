@@ -76,7 +76,7 @@ public class GrupoEntity {
     @JoinColumn(name = "ROL_ID", nullable = true)
     @JsonIgnore
     //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // <-- CORREGIDO: quitado "rol"
-    private UsuarioRolEntity rol;
+    private RolEntity rol;
     
     // Un Grupo puede tener muchos Permisos
     @ManyToMany(fetch = FetchType.LAZY)
@@ -105,7 +105,7 @@ public class GrupoEntity {
     }
 
     // Método mejorado para setRol
-    public void setRol(UsuarioRolEntity nuevoRol) {
+    public void setRol(RolEntity nuevoRol) {
         // Si ya tenía un rol, quitar este grupo de ese rol
         if (this.rol != null) {
             this.rol.getGrupos().remove(this);

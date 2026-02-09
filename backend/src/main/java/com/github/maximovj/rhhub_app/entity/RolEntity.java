@@ -33,8 +33,8 @@ import lombok.ToString;
 @EqualsAndHashCode(exclude = {"grupos"})
 @Builder
 @Entity
-@Table(name = "TBL_USUARIO_ROLES")
-public class UsuarioRolEntity {
+@Table(name = "TBL_ROLES")
+public class RolEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

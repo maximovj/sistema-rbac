@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.github.maximovj.rhhub_app.dto.request.RolRequest;
 import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
-import com.github.maximovj.rhhub_app.entity.UsuarioRolEntity;
+import com.github.maximovj.rhhub_app.entity.RolEntity;
 import com.github.maximovj.rhhub_app.mapper.RolMapper;
-import com.github.maximovj.rhhub_app.repository.UsuarioRolRepository;
+import com.github.maximovj.rhhub_app.repository.RolRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RolService {
 
-    private final UsuarioRolRepository repo;
+    private final RolRepository repo;
 
     public ResponseEntity<?> mostrarTodos() {
-        List<UsuarioRolEntity> roles = this.repo.findAll();
+        List<RolEntity> roles = this.repo.findAll();
         return ApiResponse.ok("Lista de roles", roles);
     }
 
     public ResponseEntity<?> verDetalleRol(Long rolId){
         Objects.requireNonNull(rolId, "rol_id es obligatorio");
-        UsuarioRolEntity rol = this.repo.qBuscarPorIdCargaRelaciones(rolId).orElse(null);
+        RolEntity rol = this.repo.qBuscarPorIdCargaRelaciones(rolId).orElse(null);
         return ApiResponse.ok("Info de rol", RolMapper.toDTO(rol));
     }
 
@@ -43,10 +43,10 @@ public class RolService {
                 return ApiResponse.conflict(messageError, null);
             }
             
-            UsuarioRolEntity entidad = RolMapper.toEntity(req).orElse(null);
+            RolEntity entidad = RolMapper.toEntity(req).orElse(null);
             Objects.requireNonNull(entidad, "La entidad es obligatoria");
 
-            UsuarioRolEntity guardado  = this.repo.save(entidad);
+            RolEntity guardado  = this.repo.save(entidad);
             return ApiResponse.ok("Entidad creada correctamente", RolMapper.toDto(guardado));
         } catch (Exception e) {
             return ApiResponse.internalServerError(e.getMessage(), null);
@@ -59,7 +59,7 @@ public class RolService {
             Objects.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
             Objects.requireNonNull(req.getDescripcion(), "El campo descripcion es obligatoria");
 
-            UsuarioRolEntity entidad = this.repo.findById(rolId).orElse(null);
+            RolEntity entidad = this.repo.findById(rolId).orElse(null);
             if(entidad == null) {
                 return ApiResponse.badRequest("La entidad no fue localizada", null);
             }
@@ -86,7 +86,7 @@ public class RolService {
                 entidad.setDescripcion(req.getDescripcion().trim());
             }
 
-            UsuarioRolEntity actualizar  = this.repo.save(entidad);
+            RolEntity actualizar  = this.repo.save(entidad);
             return ApiResponse.ok("Entidad actualizada correctamente", RolMapper.toDto(actualizar));
         } catch (Exception e) {
             System.out.println("Hubo un error: " + e.getMessage());
@@ -98,7 +98,7 @@ public class RolService {
         try {
             Objects.requireNonNull(rolId, "El campo rol_id es obligatoria");
 
-            UsuarioRolEntity entidad = this.repo.findById(rolId).orElse(null);
+            RolEntity entidad = this.repo.findById(rolId).orElse(null);
             if(entidad == null) {
                 return ApiResponse.badRequest("La entidad no fue localizada", null);
             }

@@ -5,20 +5,20 @@ import java.util.Optional;
 
 import com.github.maximovj.rhhub_app.dto.records.RolDTO;
 import com.github.maximovj.rhhub_app.dto.request.RolRequest;
-import com.github.maximovj.rhhub_app.entity.UsuarioRolEntity;
+import com.github.maximovj.rhhub_app.entity.RolEntity;
 
 public class RolMapper {
 
-    public static RolDTO toDTO(UsuarioRolEntity e) {
+    public static RolDTO toDTO(RolEntity e) {
         return new RolDTO(e);
     }
     
-    public static RolDTO toDto(UsuarioRolEntity e) {
+    public static RolDTO toDto(RolEntity e) {
         return new RolDTO(e, List.of());
     }
 
-    public static Optional<UsuarioRolEntity> toEntity(RolRequest req) {
-        return Optional.of( new UsuarioRolEntity(
+    public static Optional<RolEntity> toEntity(RolRequest req) {
+        return Optional.of( new RolEntity(
             req.getRolId() == null ? null : req.getRolId(), 
             req.getNombre(), 
             req.getDescripcion(), 

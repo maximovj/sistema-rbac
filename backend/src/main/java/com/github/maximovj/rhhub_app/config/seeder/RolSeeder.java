@@ -11,20 +11,20 @@ import org.springframework.stereotype.Component;
 
 import com.github.maximovj.rhhub_app.config.properties.SeederProperties;
 import com.github.maximovj.rhhub_app.entity.GrupoEntity;
-import com.github.maximovj.rhhub_app.entity.UsuarioRolEntity;
+import com.github.maximovj.rhhub_app.entity.RolEntity;
 import com.github.maximovj.rhhub_app.repository.GrupoRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioPermisosRepository;
-import com.github.maximovj.rhhub_app.repository.UsuarioRolRepository;
+import com.github.maximovj.rhhub_app.repository.RolRepository;
 
 import jakarta.transaction.Transactional;
 
 @Profile("seeder")
 @Component
 @Order(5)
-public class UsuarioRolSeeder implements ApplicationRunner {
+public class RolSeeder implements ApplicationRunner {
 
     @Autowired
-    UsuarioRolRepository rolRepository;
+    RolRepository rolRepository;
 
     @Autowired
     UsuarioPermisosRepository permisosRepository;
@@ -86,7 +86,7 @@ public class UsuarioRolSeeder implements ApplicationRunner {
 
         GrupoEntity grupo = grupoOpt.get();
 
-        UsuarioRolEntity rol = UsuarioRolEntity.builder()
+        RolEntity rol = RolEntity.builder()
                 .nombre(nombreRol)
                 .descripcion(descripcion)
                 .esAdministrador(esAdministrador)
