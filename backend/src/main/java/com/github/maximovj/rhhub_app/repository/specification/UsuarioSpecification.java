@@ -7,7 +7,7 @@ import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 
 import jakarta.persistence.criteria.Join;
 
-public class UsuarioExtendsSpecification extends BaseSpecification<UsuarioEntity> {
+public class UsuarioSpecification extends BaseSpecification<UsuarioEntity> {
 
     public Specification<UsuarioEntity> filtro(UsuarioEntity e) {
         return (root, query, cb) -> {

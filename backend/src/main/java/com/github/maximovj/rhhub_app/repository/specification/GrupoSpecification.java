@@ -4,37 +4,27 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.github.maximovj.rhhub_app.entity.GrupoEntity;
 
-public class GrupoSpecification {
+public class GrupoSpecification extends BaseSpecification<GrupoEntity> {
 
-    public static Specification<GrupoEntity> conGrupoId(Long grupoId) {
-        return (root, query, cb) ->
-                grupoId == null ? null : cb.equal(root.get("grupoId"), grupoId);
+    public Specification<GrupoEntity> filtro(GrupoEntity e) {
+        return Specification
+                .where(equalsSpec("grupoId", e.getGrupoId()))
+                .and(likeIgnoreCase("nombre", e.getNombre()))
+                .and(likeIgnoreCase("descripcion", e.getDescripcion()))
+                .and(equalsSpec("esActivo", e.getEsActivo()));
     }
 
-    public static Specification<GrupoEntity> conNombre(String nombre) {
-        return (root, query, cb) ->
-                (nombre == null || nombre.isBlank())
-                        ? null
-                        : cb.like(
-                            cb.lower(root.get("nombre")),
-                            "%" + nombre.toLowerCase() + "%"
-                        );
-    }
-
-    public static Specification<GrupoEntity> conDescripcion(String descripcion) {
-        return (root, query, cb) ->
-                (descripcion == null || descripcion.isBlank())
-                        ? null
-                        : cb.like(
-                            cb.lower(root.get("descripcion")),
-                            "%" + descripcion.toLowerCase() + "%"
-                        );
-    }
-
-    public static Specification<GrupoEntity> conEsActivo(Boolean esActivo) {
-        return (esActivo == null)
-                ? null
-                : (root, query, cb) -> cb.equal(root.get("esActivo"), esActivo);
+    public Specification<GrupoEntity> filtro(
+            Long id,
+            String nombre,
+            String descripcion,
+            Boolean activo
+    ) {
+        return Specification
+                .where(equalsSpec("grupoId", id))
+                .and(likeIgnoreCase("nombre", nombre))
+                .and(likeIgnoreCase("descripcion", descripcion))
+                .and(equalsSpec("esActivo", activo));
     }
     
 }

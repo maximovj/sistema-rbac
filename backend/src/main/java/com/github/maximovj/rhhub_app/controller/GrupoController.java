@@ -31,8 +31,12 @@ public class GrupoController {
 
     // !! Mostrar todos los grupos
     @GetMapping("")
-    public ResponseEntity<?> getVerTodos() {
-        return ResponseEntity.ok(this.service.verTodosGrupos());
+    public ResponseEntity<?> getVerTodos(
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        // Mostrar todos con paginación
+        return this.service.verGrupos(page, size); 
     }
 
     // !! Buscar grupos
@@ -42,7 +46,8 @@ public class GrupoController {
         @RequestParam(defaultValue = "10") Integer size,
         @ModelAttribute GrupoEntity req
     ) {
-        return this.service.busquedaX2(page, size, req);
+        // Filtrar todos con paginación
+        return this.service.busquedaPorPropiedades(page, size, req); 
     }
 
     // !! Ver un grupo por grupo_id
@@ -60,7 +65,7 @@ public class GrupoController {
         @RequestBody @Valid GrupoRequest req
     ) {
         log.info("putActualizarGrupo JSON recibido: {}", req.toString());
-        return this.service.actualizarGrupo(grupoId, req);
+        return this.service.actualizarUnGrupo(grupoId, req);
     }
 
     // !! Crear un grupo
@@ -74,7 +79,7 @@ public class GrupoController {
 
     // !! Eliminar un grupo
     @DeleteMapping("/{grupo_id}")
-    public ResponseEntity<?> deleteEliminarUnGrupo(
+    public ResponseEntity<?> deleteEliminarGrupo(
         @PathVariable(value = "grupo_id") Long grupoId
     ) {
         log.info("deleteEliminarUnGrupo grupo_id recibido: {}", grupoId);

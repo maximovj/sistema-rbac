@@ -2,13 +2,11 @@ package com.github.maximovj.rhhub_app.service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +14,7 @@ import com.github.maximovj.rhhub_app.dto.request.GrupoRequest;
 import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
 import com.github.maximovj.rhhub_app.entity.GrupoEntity;
 import com.github.maximovj.rhhub_app.mapper.GrupoMapper;
-import com.github.maximovj.rhhub_app.projection.UsuarioProjection;
 import com.github.maximovj.rhhub_app.repository.GrupoRepository;
-import com.github.maximovj.rhhub_app.repository.specification.GrupoExtendsSpecification;
 import com.github.maximovj.rhhub_app.repository.specification.GrupoSpecification;
 
 import lombok.AllArgsConstructor;
@@ -31,40 +27,18 @@ public class GrupoService {
 
     private final GrupoRepository repo;
 
-    public Page<GrupoEntity> filtraGrupos(
-            Long grupoId,
-            String nombre,
-            String descripcion,
-            Boolean esActivo,
-            Pageable pageable
-    ) {
-        Specification<GrupoEntity> spec = Specification
-                .where(GrupoSpecification.conGrupoId(grupoId))
-                .and(GrupoSpecification.conNombre(nombre))
-                .and(GrupoSpecification.conDescripcion(descripcion))
-                .and(GrupoSpecification.conEsActivo(esActivo));
-
-        return this.repo.findAll(spec, pageable);
-    }
-
-    public ResponseEntity<?> busqueda(Integer page, Integer size, GrupoEntity e) {
+    public ResponseEntity<?> verGrupos(Integer page, Integer size) {
         ApiResponse<GrupoEntity> response = new ApiResponse<>();
         Pageable pageable = PageRequest.of(
             page, 
             size, 
             Sort.by("nombre").ascending());
 
-        Page<GrupoEntity> pageGrupo = this.filtraGrupos(
-                                        e.getGrupoId(), 
-                                        e.getNombre(), 
-                                        e.getDescripcion(), 
-                                        e.getEsActivo(), 
-                                        pageable);
-                                        
-        return response.okPage("Lista de usuarios", pageGrupo);
+        Page<GrupoEntity> pageGrupo = this.repo.findAll(pageable);
+        return response.okPage("Lista de entidades", pageGrupo);
     }
 
-    public ResponseEntity<?> busquedaX2(Integer page, Integer size, GrupoEntity e) {
+    public ResponseEntity<?> busquedaPorPropiedades(Integer page, Integer size, GrupoEntity e) {
         ApiResponse<GrupoEntity> response = new ApiResponse<>();
         Pageable pageable = PageRequest.of(
             page, 
@@ -72,15 +46,9 @@ public class GrupoService {
             Sort.by("nombre").ascending());
 
         Page<GrupoEntity> pageGrupo = this.repo.findAll(
-            new GrupoExtendsSpecification().filtroConEntidad(e), pageable
+            new GrupoSpecification().filtro(e), pageable
         );
-                                        
-        return response.okPage("Lista de usuarios", pageGrupo);
-    }
-
-    public ResponseEntity<?> verTodosGrupos() {
-        List<GrupoEntity> grupos =  this.repo.findAll();
-        return ApiResponse.ok("Lista de grupos", grupos);
+        return response.okPage("Filtro de entidades", pageGrupo);
     }
 
     public ResponseEntity<?> verGrupo(Long grupoId) {
@@ -94,7 +62,7 @@ public class GrupoService {
         return ApiResponse.ok("Info del grupo", GrupoMapper.toDTO(grupo));
     }
 
-    public ResponseEntity<?> actualizarGrupo(Long grupoId, GrupoRequest req) {
+    public ResponseEntity<?> actualizarUnGrupo(Long grupoId, GrupoRequest req) {
         Objects.requireNonNull(grupoId);
         GrupoEntity grupo =  this.repo.findById(grupoId).orElse(null);
 
