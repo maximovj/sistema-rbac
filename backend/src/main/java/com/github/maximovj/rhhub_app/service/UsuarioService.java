@@ -9,6 +9,7 @@ import com.github.maximovj.rhhub_app.exception.BusinessException;
 import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 import com.github.maximovj.rhhub_app.repository.UsuarioRepository;
 import com.github.maximovj.rhhub_app.service.integration.BaseServiceImpl;
+import com.github.maximovj.rhhub_app.service.integration.JpaBaseRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,9 @@ public class UsuarioService extends BaseServiceImpl<UsuarioEntity, Long> {
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    protected JpaRepository<UsuarioEntity, Long> getRepository() {
+    protected JpaBaseRepository<UsuarioEntity, Long> getRepository() {
         return this.usuarioRepository;
     }
-   
     @Override
     public void delete(Long id) {
         UsuarioEntity usuario = this.usuarioRepository

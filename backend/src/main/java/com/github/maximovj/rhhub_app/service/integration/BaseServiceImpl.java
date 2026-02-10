@@ -2,7 +2,9 @@ package com.github.maximovj.rhhub_app.service.integration;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 
@@ -12,7 +14,7 @@ import jakarta.transaction.Transactional;
 public abstract class BaseServiceImpl<E, ID>
         implements BaseService<E, ID> {
 
-    protected abstract JpaRepository<E, ID> getRepository();
+    protected abstract JpaBaseRepository<E, ID> getRepository();
 
     @Override
     public List<E> findAll() {
@@ -46,5 +48,16 @@ public abstract class BaseServiceImpl<E, ID>
         }
         getRepository().deleteById(id);
     }
+
+    @Override
+    public Page<E> findAll(Pageable pageable) {
+        return getRepository().findAll(pageable);
+    }
+
+    @Override
+    public Page<E> findBySpecification(Specification<E> spec, Pageable pageable) {
+        return getRepository().findAll(spec, pageable);
+    }
+    
 }
 

@@ -11,8 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 import com.github.maximovj.rhhub_app.projection.UsuarioProjection;
+import com.github.maximovj.rhhub_app.service.integration.JpaBaseRepository;
 
-public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
+public interface UsuarioRepository extends JpaBaseRepository<UsuarioEntity, Long> {
 
     @Query("""
         SELECT u FROM UsuarioEntity u
