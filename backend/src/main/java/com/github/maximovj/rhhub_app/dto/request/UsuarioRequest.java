@@ -37,8 +37,9 @@ public class UsuarioRequest {
     @JsonProperty(value = "confirmar_contrasena")
     private String confirmar_contrasena;
 
-    @NotNull(message = "El campo es_activo es obligatorio y debe ser true o false")
-    @JsonProperty(value = "es_activo")
-    private Boolean es_activo;
+    //@NotNull(message = "El campo es_activo es obligatorio y debe ser true o false")
+    @JsonProperty(value = "es_activo", required = false, defaultValue = "false")
+    @Builder.Default
+    private Boolean es_activo = false;
     
 }

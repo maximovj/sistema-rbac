@@ -27,11 +27,16 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
 
     boolean existsByUsuario(String usuario);
 
+    boolean existsByUsuarioOrCorreo(String usuario, String correo);
+
     Optional<UsuarioEntity> findByUsuario(String usuario);
+
+    Optional<UsuarioEntity> findByUsuarioOrCorreo(String usuario, String correo);
 
     Optional<UsuarioEntity> findByCorreo(String correo);
     
     Optional<UsuarioEntity> findByToken(String token);
+
 
     @EntityGraph(attributePaths = {"grupo.rol", "grupo.permisos"})
     @Query("SELECT u FROM UsuarioEntity u WHERE u.usuario = :usuario")
