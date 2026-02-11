@@ -11,52 +11,56 @@ import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Transactional
-public abstract class BaseServiceImpl<E, ID>
+public abstract class BaseServiceImpl<E, ID, R extends JpaBaseRepository<E, ID>>
         implements BaseService<E, ID> {
 
-    protected abstract JpaBaseRepository<E, ID> getRepository();
+    protected final R jpaBaseRepository;
+
+    protected BaseServiceImpl(R jpaBaseRepository) {
+        this.jpaBaseRepository = jpaBaseRepository;
+    }
 
     @Override
     public List<E> findAll() {
-        return getRepository().findAll();
+        return this.jpaBaseRepository.findAll();
     }
 
     @Override
     public E findById(ID id) {
-        return getRepository()
+        return this.jpaBaseRepository
                 .findById(id)
                 .orElse(null);
     }
 
     @Override
     public E create(E entity) {
-        return getRepository().save(entity);
+        return this.jpaBaseRepository.save(entity);
     }
 
     @Override
     public E update(ID id, E entity) {
-        if (!getRepository().existsById(id)) {
+        if (!this.jpaBaseRepository.existsById(id)) {
             throw new ResourceNotFoundException("Entidad no encontrada");
         }
-        return getRepository().save(entity);
+        return this.jpaBaseRepository.save(entity);
     }
 
     @Override
     public void delete(ID id) {
-        if (!getRepository().existsById(id)) {
+        if (!this.jpaBaseRepository.existsById(id)) {
             throw new ResourceNotFoundException("Entidad no encontrada");
         }
-        getRepository().deleteById(id);
+        this.jpaBaseRepository.deleteById(id);
     }
 
     @Override
     public Page<E> findAll(Pageable pageable) {
-        return getRepository().findAll(pageable);
+        return this.jpaBaseRepository.findAll(pageable);
     }
 
     @Override
     public Page<E> findBySpecification(Specification<E> spec, Pageable pageable) {
-        return getRepository().findAll(spec, pageable);
+        return this.jpaBaseRepository.findAll(spec, pageable);
     }
     
 }

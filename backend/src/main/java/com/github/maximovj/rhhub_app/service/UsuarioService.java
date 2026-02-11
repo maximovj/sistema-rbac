@@ -21,20 +21,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@AllArgsConstructor
 @Slf4j
-public class UsuarioService extends BaseServiceImpl<UsuarioEntity, Long> {
-
-    private final UsuarioRepository usuarioRepository;
-
-    @Override
-    protected JpaBaseRepository<UsuarioEntity, Long> getRepository() {
-        return this.usuarioRepository;
-    }
+public class UsuarioService extends BaseServiceImpl<UsuarioEntity, Long, UsuarioRepository> {
     
+    protected UsuarioService(UsuarioRepository jpaBaseRepository) {
+        super(jpaBaseRepository);
+    }
+
     @Override
     public void delete(Long id) {
-        UsuarioEntity usuario = this.usuarioRepository
+        UsuarioEntity usuario = this.jpaBaseRepository
             .findByUsuarioIdWithRelations(id)
             .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrada"));
 
@@ -48,27 +44,27 @@ public class UsuarioService extends BaseServiceImpl<UsuarioEntity, Long> {
     }
 
     public UsuarioEntity findByUsuario(String usuario) {
-        return usuarioRepository
+        return jpaBaseRepository
             .findByUsuario(usuario).orElse(null);
             //.orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
     }
 
     public UsuarioEntity findByUsuarioOrCorreo(String usuario, String correo) {
-        return usuarioRepository
+        return jpaBaseRepository
             .findByUsuarioOrCorreo(usuario, correo).orElse(null);
             //.orElseThrow(() -> new ResourceNotFoundException("Entidad no encontrado"));
     }
 
     public boolean existsByUsuarioOrCorreo(String usuario, String correo) {
-        return usuarioRepository.existsByUsuarioOrCorreo(usuario, correo);
+        return jpaBaseRepository.existsByUsuarioOrCorreo(usuario, correo);
     }
 
     public Page<UsuarioProjection> listarUsuarios(Pageable pageable) {
-        return this.usuarioRepository.qMostrarUsuarios(pageable);
+        return this.jpaBaseRepository.qMostrarUsuarios(pageable);
     }
 
     public Page<UsuarioProjection> buscarUsuarios(Specification<UsuarioEntity> spec, Pageable pageable) {
-        return this.usuarioRepository.qBuscarUsuarios(spec, pageable);
+        return this.jpaBaseRepository.qBuscarUsuarios(spec, pageable);
     }
 
 }
