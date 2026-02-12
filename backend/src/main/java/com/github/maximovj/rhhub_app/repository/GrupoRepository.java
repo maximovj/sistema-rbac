@@ -5,14 +5,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.github.maximovj.rhhub_app.entity.GrupoEntity;
+import com.github.maximovj.rhhub_app.service.integration.JpaBaseRepository;
 
-public interface GrupoRepository extends JpaRepository<GrupoEntity, Long>, JpaSpecificationExecutor<GrupoEntity> {
+public interface GrupoRepository extends JpaBaseRepository<GrupoEntity, Long> {
 
     boolean existsByNombre(String nombre);
 

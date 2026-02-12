@@ -16,7 +16,7 @@ public class GrupoRequest {
     @PositiveOrZero(message = "El campo grupo_id debe ser un número postivo")
     @JsonProperty(value = "grupo_id")
     @Builder.Default
-    private Long grupoId = null;
+    private Long grupo_id = null;
 
     //@NotBlank(message = "El campo nombre es obligatoria")
     @Size(min = 3, max = 20, message = "El nombre debe tener entre 3 y 20 caracteres")
@@ -30,8 +30,8 @@ public class GrupoRequest {
             message = "La descripcion solo puede contener letras, números, puntos, guiones, guiones bajos y simbolos (.-@#')")
     private String descripcion;
     
-    @JsonProperty(value = "es_activo", defaultValue = "true")
+    @JsonProperty(value = "es_activo", required = false, defaultValue = "false")
     @Builder.Default
-    private Boolean esActivo = true;
+    private Boolean es_activo = true;
     
 }
