@@ -13,6 +13,7 @@ import com.github.maximovj.rhhub_app.mapper.RolMapper;
 import com.github.maximovj.rhhub_app.projection.RolProjection;
 import com.github.maximovj.rhhub_app.repository.specification.RolSpecBuilder;
 import com.github.maximovj.rhhub_app.service.RolService;
+import com.github.maximovj.rhhub_app.util.ValidRequest;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -80,7 +81,7 @@ public class RolController {
     public ResponseEntity<?> getVerUnReol(
         @PathVariable(name = "rol_id") Long rolId
     ) {
-        Objects.requireNonNull(rolId, "El campo rol_id es obligatoria");
+        ValidRequest.requireNonNull(rolId, "El campo rol_id es obligatoria");
         log.info("getVerUnReol recibido: {}", rolId);
 
         RolEntity rol = this.service.findById(rolId);
@@ -98,8 +99,8 @@ public class RolController {
         @RequestBody RolRequest req
     )
     {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
-        Objects.requireNonNull(rolId, "El campo rol_id es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(rolId, "El campo rol_id es obligatoria");
         log.info("putActualizarRol recibido: {}", req.toString());
 
         RolEntity rol = this.service.findById(rolId);
@@ -117,9 +118,9 @@ public class RolController {
     public ResponseEntity<?> postCrearRol(
         @RequestBody @Valid RolRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
-        Objects.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
-        Objects.requireNonNull(req.getDescripcion(), "El campo descripcion es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
+        ValidRequest.requireNonNull(req.getDescripcion(), "El campo descripcion es obligatoria");
         log.info("putActualizarRol recibido: {}", req.toString());
 
         boolean existe = this.service.esoExiste(req.getNombre().trim());
@@ -142,7 +143,7 @@ public class RolController {
         @PathVariable(name = "rol_id") Long rolId
     ) {
         try {
-            Objects.requireNonNull(rolId, "El campo rol_id es obligatoria");
+            ValidRequest.requireNonNull(rolId, "El campo rol_id es obligatoria");
             log.info("deleteEliminarRol recibido: {}", rolId);
 
             RolEntity rol = this.service.findById(rolId);

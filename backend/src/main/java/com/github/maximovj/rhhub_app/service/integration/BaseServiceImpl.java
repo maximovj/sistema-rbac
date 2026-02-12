@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.maximovj.rhhub_app.dto.response.ApiErrorDto;
 import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 
 
@@ -27,9 +28,13 @@ public abstract class BaseServiceImpl<E, ID, R extends JpaBaseRepository<E, ID>>
 
     @Override
     public E findById(ID id) {
-        return this.jpaBaseRepository
-                .findById(id)
-                .orElse(null);
+        return this.jpaBaseRepository.findById(id)
+            .orElseThrow(() ->
+                new ResourceNotFoundException(
+                    "Recurso no encontrado",
+                    List.of(new ApiErrorDto("id", "No existe un recurso con id " + id))
+                )
+            );
     }
 
     @Override
@@ -42,7 +47,10 @@ public abstract class BaseServiceImpl<E, ID, R extends JpaBaseRepository<E, ID>>
     @Transactional
     public E update(ID id, E entity) {
         if (!this.jpaBaseRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Entidad no encontrada");
+            throw new ResourceNotFoundException(
+                "Recurso no encontrado",
+                List.of(new ApiErrorDto("id", "No existe un recurso con id " + id))
+            );
         }
         return this.jpaBaseRepository.save(entity);
     }
@@ -51,7 +59,10 @@ public abstract class BaseServiceImpl<E, ID, R extends JpaBaseRepository<E, ID>>
     @Transactional
     public void delete(ID id) {
         if (!this.jpaBaseRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Entidad no encontrada");
+            throw new ResourceNotFoundException(
+                "Recurso no encontrado",
+                List.of(new ApiErrorDto("id", "No existe un recurso con id " + id))
+            );
         }
         this.jpaBaseRepository.deleteById(id);
     }

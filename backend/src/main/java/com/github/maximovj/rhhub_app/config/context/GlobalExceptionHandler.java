@@ -18,11 +18,28 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.github.maximovj.rhhub_app.dto.response.ApiErrorDto;
 import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
+import com.github.maximovj.rhhub_app.dto.response.ApiResponseError;
+import com.github.maximovj.rhhub_app.exception.BadRequestException;
+import com.github.maximovj.rhhub_app.exception.BaseCustomException;
+import com.github.maximovj.rhhub_app.exception.NotFoundException;
+import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // !! Error de excepción personalizado
+    @ExceptionHandler(BaseCustomException.class)
+    public ResponseEntity<?> handleBaseException(BaseCustomException ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; 
+        if (ex instanceof BadRequestException) status = HttpStatus.BAD_REQUEST;
+        if (ex instanceof NotFoundException) status = HttpStatus.NOT_FOUND;
+        if (ex instanceof ResourceNotFoundException) status = HttpStatus.NOT_FOUND;
+
+        return ResponseEntity.status(status)
+                .body(new ApiResponseError<>(status, ex.getMessage(), ex.getErrors()));
+    }
 
     // Exception (catch-all FINAL)
     // Siempre deja uno genérico al final:

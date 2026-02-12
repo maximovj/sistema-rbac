@@ -11,6 +11,7 @@ import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 import com.github.maximovj.rhhub_app.mapper.PermisoMapper;
 import com.github.maximovj.rhhub_app.repository.specification.PermisoSpecBuilder;
 import com.github.maximovj.rhhub_app.service.PermisoService;
+import com.github.maximovj.rhhub_app.util.ValidRequest;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -90,7 +91,7 @@ public class PermisoController {
         @PathVariable(name = "permiso_id") Long permisoId,
         @RequestBody PermisoRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
         
         log.info("putActualizarPermiso recibido: {} / {}", permisoId, req.toString());
         PermisoEntity permiso = this.service.findById(permisoId);
@@ -108,9 +109,9 @@ public class PermisoController {
     public ResponseEntity<?> postCrearPermiso(
         @RequestBody @Valid PermisoRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
-        Objects.requireNonNull(req.getAccion(),"El campo accion es obligatorio");
-        Objects.requireNonNull(req.getModulo(),"El campo modulo es obligatorio");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(req.getAccion(),"El campo accion es obligatorio");
+        ValidRequest.requireNonNull(req.getModulo(),"El campo modulo es obligatorio");
 
         log.info("postCrearPermiso recibido: {}", req.toString()); 
         boolean existe = this.service.estoExiste(req.getAccion().trim(), req.getModulo().trim());

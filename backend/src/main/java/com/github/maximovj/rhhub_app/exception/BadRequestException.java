@@ -4,15 +4,14 @@ import java.util.List;
 
 import com.github.maximovj.rhhub_app.dto.response.ApiErrorDto;
 
-public class ResourceNotFoundException extends BaseCustomException {
+public class BadRequestException extends BaseCustomException {
 
-    public ResourceNotFoundException(String message) {
+    public BadRequestException(String message) {
         super(message);
     }
     
-    public ResourceNotFoundException(String message, List<ApiErrorDto> errors) {
+    public BadRequestException(String message, List<ApiErrorDto> errors) {
         super(message);
     }
 
 }
-

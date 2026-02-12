@@ -13,6 +13,7 @@ import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
 import com.github.maximovj.rhhub_app.mapper.GrupoMapper;
 import com.github.maximovj.rhhub_app.repository.specification.GrupoSpecBuilder;
 import com.github.maximovj.rhhub_app.service.GrupoService;
+import com.github.maximovj.rhhub_app.util.ValidRequest;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -79,7 +80,7 @@ public class GrupoController {
     public ResponseEntity<?> getVerUnGrupo(
         @PathVariable(name = "grupo_id") Long grupoId
     ) {
-        Objects.requireNonNull(grupoId, "El campo grupo_id es obligatoria");
+        ValidRequest.requireNonNull(grupoId, "El campo grupo_id es obligatoria");
 
         GrupoEntity grupo = this.service.findById(grupoId);
         if(Objects.isNull(grupo)) {
@@ -93,10 +94,10 @@ public class GrupoController {
     @PutMapping("/{grupo_id}")
     public ResponseEntity<?> putActualizarGrupo(
         @PathVariable(value = "grupo_id") Long grupoId,
-        @RequestBody @Valid GrupoRequest req
+        @RequestBody GrupoRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
-        Objects.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
         log.info("putActualizarGrupo JSON recibido: {}", req.toString());
 
         GrupoEntity grupo = this.service.findById(grupoId);
@@ -119,9 +120,9 @@ public class GrupoController {
     public ResponseEntity<?> postCrearGrupo(
         @RequestBody() @Valid GrupoRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo JSON es obligatoria");
-        Objects.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
-        Objects.requireNonNull(req.getDescripcion(), "El campo descripcion es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo JSON es obligatoria");
+        ValidRequest.requireNonNull(req.getNombre(), "El campo nombre es obligatoria");
+        ValidRequest.requireNonNull(req.getDescripcion(), "El campo descripcion es obligatoria");
         log.info("putActualizarGrupo JSON recibido: {}", req.toString());
 
         boolean existe = this.service.esoExiste(req.getNombre());

@@ -11,6 +11,7 @@ import com.github.maximovj.rhhub_app.mapper.UsuarioMapper;
 import com.github.maximovj.rhhub_app.projection.UsuarioProjection;
 import com.github.maximovj.rhhub_app.repository.specification.UsuarioSpecBuilder;
 import com.github.maximovj.rhhub_app.service.UsuarioService;
+import com.github.maximovj.rhhub_app.util.ValidRequest;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -79,8 +80,8 @@ public class UsuarioController {
         @PathVariable Long id,
         @RequestBody UsuarioRequest req
     ) {
-        Objects.requireNonNull(id, "El campo id es obligatoria");
-        Objects.requireNonNull(req, "El cuerpo (JSON) de la petición es obligatoria");
+        ValidRequest.requireNonNull(id, "El campo id es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo (JSON) de la petición es obligatoria");
         
         UsuarioEntity usuario = this.usuarioService.findById(id);
         if(Objects.isNull(usuario)) {
@@ -98,7 +99,7 @@ public class UsuarioController {
     public ResponseEntity<?> postCrearUsuario(
         @RequestBody @Valid UsuarioRequest req
     ) {
-        Objects.requireNonNull(req, "El cuerpo (JSON) de la petición es obligatoria");
+        ValidRequest.requireNonNull(req, "El cuerpo (JSON) de la petición es obligatoria");
         
         boolean existeUsuario = this.usuarioService.existsByUsuarioOrCorreo(req.getUsuario().trim(), req.getCorreo().trim());
         if(existeUsuario){
@@ -120,7 +121,7 @@ public class UsuarioController {
     public ResponseEntity<?> getVerUnUsuario(
         @PathVariable(required = true, name = "usuario_id") Long usuarioId
     ) {
-        Objects.requireNonNull(usuarioId, "El campo id es obligatoria");
+        ValidRequest.requireNonNull(usuarioId, "El campo id es obligatoria");
         
         UsuarioEntity usuario = this.usuarioService.findById(usuarioId);
         if(usuario == null) {
@@ -132,7 +133,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEliminarUnUsuario(@PathVariable Long id) {
         try {
-           Objects.requireNonNull(id, "El campo usuario_id es obligatoria");
+           ValidRequest.requireNonNull(id, "El campo usuario_id es obligatoria");
             log.info("deleteEliminarUnUsuario recibido: {}", id);
 
             UsuarioEntity usuario = this.usuarioService.findById(id);

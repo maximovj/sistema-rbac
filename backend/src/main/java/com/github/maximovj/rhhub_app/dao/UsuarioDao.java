@@ -15,6 +15,7 @@ import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 import com.github.maximovj.rhhub_app.projection.UsuarioProjection;
 import com.github.maximovj.rhhub_app.repository.UsuarioEstadoRepository;
 import com.github.maximovj.rhhub_app.repository.UsuarioRepository;
+import com.github.maximovj.rhhub_app.util.ValidRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class UsuarioDao {
 
     @Transactional
     public UsuarioEntity deleteUsuarioPorUsuarioId(Long usuario_id) {
-        Objects.requireNonNull(usuario_id);
+        ValidRequest.requireNonNull(usuario_id);
         UsuarioEntity entidad = this.usuarioRepository.findById(usuario_id).orElse(null);
         if(entidad == null) {
             return null;
@@ -58,7 +59,7 @@ public class UsuarioDao {
     public UsuarioEntity putUsuarioPorUsuarioId(Long usuario_id, UsuarioRequest req) {
         log.info("request recibido: {}", req.toString());
 
-        Objects.requireNonNull(usuario_id);
+        ValidRequest.requireNonNull(usuario_id, "El campo usuario_id es obligatoria");
         UsuarioEntity entidad = this.usuarioRepository.findById(usuario_id).orElse(null);
         if(entidad == null) {
             return null;
