@@ -9,16 +9,14 @@ public record RolDTO(
     Long rol_id,
     String nombre,
     String descripcion,
-    Boolean es_administrador,
-    Boolean es_activo,
     List<GrupoEntity> grupos) {
 
         public RolDTO(RolEntity e) {
-            this(e.getRolId(), e.getNombre(), e.getDescripcion(), e.getEsAdministrador(), e.getEsActivo(), e.getGrupos());
+            this(e.getRolId(), e.getNombre(), e.getDescripcion(), e.getGrupos());
         }
 
         public RolDTO(RolEntity e, List<GrupoEntity> grupos) {
-            this(e.getRolId(), e.getNombre(), e.getDescripcion(), e.getEsAdministrador(), e.getEsActivo(), grupos);
+            this(e.getRolId(), e.getNombre(), e.getDescripcion(), grupos);
         }
     
 }

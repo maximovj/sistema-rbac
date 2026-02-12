@@ -15,7 +15,7 @@ public class RolRequest {
     @PositiveOrZero(message = "El campo grupo_id debe ser un número postivo")
     @JsonProperty(value = "rol_id")
     @Builder.Default
-    private Long rolId = null;
+    private Long rol_id = null;
 
     //@NotBlank(message = "El campo nombre es obligatoria")
     @Size(min = 3, max = 20, message = "El nombre debe tener entre 3 y 20 caracteres")
@@ -30,13 +30,5 @@ public class RolRequest {
         message = "La descripción solo puede contener letras, números y los símbolos (.-@#')"
     )
     private String descripcion;
-
-    @JsonProperty(value = "es_administrador", defaultValue = "false")
-    @Builder.Default
-    private Boolean esAdministrador = false;
-
-    @JsonProperty(value = "es_activo", defaultValue = "true")
-    @Builder.Default
-    private Boolean esActivo = true;
 
 }
