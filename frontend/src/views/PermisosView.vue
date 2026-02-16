@@ -267,80 +267,56 @@
         </template>
       </Column>
 
+
 <template #paginatorcontainer="{ first, last, page, pageCount, prevPageCallback, nextPageCallback, rowChangeCallback, totalRecords }">
-  <div class="flex items-center justify-between w-full">
-    <!-- Dropdown con etiqueta visible -->
-    <div class="flex items-center gap-3">
-      <span class="text-sm font-medium text-gray-700">Filas por página</span>
+  <div class="flex items-center justify-between w-full font-mono text-sm">
+    <!-- Barra de direcciones ficticia -->
+    <div class="flex items-center gap-2 flex-1">
+      <div class="flex items-center bg-white rounded-full border border-gray-300 px-3 py-1.5 shadow-inner">
+        <i class="pi pi-lock text-green-600 text-xs mr-2"></i>
+        <span class="text-gray-600">tabla/</span>
+        <span class="font-bold text-gray-800">permisos</span>
+        <span class="text-gray-400 mx-2">|</span>
+        <span class="text-blue-600">{{ first }}-{{ last }}/{{ totalRecords }}</span>
+      </div>
+    </div>
+    
+    <!-- Controles como botones de navegador -->
+    <div class="flex items-center gap-1 bg-white rounded-lg border border-gray-300 shadow-sm">
+      <Button 
+        icon="pi pi-chevron-left" 
+        text
+        @click="prevPageCallback" 
+        :disabled="page === 0"
+        class="rounded-l-lg border-r border-gray-200 hover:bg-gray-50"
+        :class="{ 'text-gray-300': page === 0 }"
+      />
+      <span class="px-3 py-2 text-sm bg-gray-50 text-gray-700 font-medium">
+        {{ page + 1 }} / {{ pageCount }}
+      </span>
+      <Button 
+        icon="pi pi-chevron-right" 
+        text
+        @click="nextPageCallback" 
+        :disabled="page === pageCount - 1"
+        class="rounded-r-lg border-l border-gray-200 hover:bg-gray-50"
+        :class="{ 'text-gray-300': page === pageCount - 1 }"
+      />
+    </div>
+    
+    <!-- Selector estilo URL params -->
+    <div class="flex items-center gap-2 ml-2">
+      <span class="text-gray-500 text-xs">Filas:</span>
       <Dropdown 
         :options="[2, 10, 50, 100]" 
-        v-model="rowsDataTable" 
-        @change="rowChangeCallback(rowsDataTable)"
-        class="w-24"
-        style="height: 40px;"
-      >
-        <template #value="slotProps">
-          <span class="text-sm font-medium">{{ slotProps.value }}</span>
-        </template>
-      </Dropdown>
-    </div>
-    
-    <!-- Barra de progreso con etiquetas -->
-    <div class="flex-1 max-w-md mx-8">
-      <div class="flex items-center justify-between mb-1">
-        <span class="text-xs font-medium text-gray-500">PROGRESO DE PÁGINAS</span>
-        <span class="text-sm font-semibold text-blue-600">{{ Math.round(((page + 1) / pageCount) * 100) }}%</span>
-      </div>
-      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div 
-          class="h-full bg-blue-600 transition-all duration-300"
-          :style="{ width: `${((page + 1) / pageCount) * 100}%` }"
-        ></div>
-      </div>
-      <div class="flex justify-between mt-1 text-xs text-gray-400">
-        <span>Página 1</span>
-        <span>Página {{ pageCount }}</span>
-      </div>
-    </div>
-    
-    <!-- Navegación completa -->
-    <div class="flex items-center gap-4">
-      <!-- Información de registros -->
-      <div class="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-        <span class="font-semibold text-gray-900">{{ first }}</span> 
-        <span class="text-gray-400">—</span> 
-        <span class="font-semibold text-gray-900">{{ last }}</span>
-        <span class="text-gray-400 mx-2">de</span>
-        <span class="font-semibold text-gray-900">{{ totalRecords }}</span>
-      </div>
-      
-      <!-- Controles de página -->
-      <div class="flex items-center gap-2">
-        <Button 
-          icon="pi pi-chevron-left" 
-          severity="secondary" 
-          outlined
-          @click="prevPageCallback" 
-          :disabled="page === 0"
-          class="w-10 h-10 border-gray-300"
-        />
-        <span class="text-sm text-gray-700 min-w-[90px] text-center">
-          Página <span class="font-semibold text-gray-900">{{ page + 1 }}</span> de {{ pageCount }}
-        </span>
-        <Button 
-          icon="pi pi-chevron-right" 
-          severity="secondary" 
-          outlined
-          @click="nextPageCallback" 
-          :disabled="page === pageCount - 1"
-          class="w-10 h-10 border-gray-300"
-        />
-      </div>
+        v-model="rows" 
+        @change="rowChangeCallback(rows)"
+        class="w-24 border-0 bg-white shadow-sm rounded-md"
+        style="height: 35px;"
+      />
     </div>
   </div>
 </template>
-
-
       
     </DataTable>
   </div>
