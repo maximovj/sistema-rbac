@@ -268,71 +268,72 @@
       </Column>
 
 <template #paginatorcontainer="{ first, last, page, pageCount, prevPageCallback, nextPageCallback, rowChangeCallback, totalRecords }">
-  <div class="grid grid-cols-3 gap-4 w-full items-center">
-    <!-- Panel izquierdo: Dropdown -->
+  <div class="flex items-center justify-between w-full">
+    <!-- Dropdown con etiqueta visible -->
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-        <i class="pi pi-list text-blue-600"></i>
+      <span class="text-sm font-medium text-gray-700">Filas por página</span>
+      <Dropdown 
+        :options="[2, 10, 50, 100]" 
+        v-model="rowsDataTable" 
+        @change="rowChangeCallback(rowsDataTable)"
+        class="w-24"
+        style="height: 40px;"
+      >
+        <template #value="slotProps">
+          <span class="text-sm font-medium">{{ slotProps.value }}</span>
+        </template>
+      </Dropdown>
+    </div>
+    
+    <!-- Barra de progreso con etiquetas -->
+    <div class="flex-1 max-w-md mx-8">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs font-medium text-gray-500">PROGRESO DE PÁGINAS</span>
+        <span class="text-sm font-semibold text-blue-600">{{ Math.round(((page + 1) / pageCount) * 100) }}%</span>
       </div>
-      <div>
-        <span class="text-xs text-gray-500 block mb-1">FILAS POR PÁGINA</span>
-        <Dropdown 
-          :options="[2, 10, 50, 100]" 
-          v-model="rows" 
-          @change="rowChangeCallback(rows)"
-          class="w-24"
-          style="height: 38px;"
-        />
+      <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div 
+          class="h-full bg-blue-600 transition-all duration-300"
+          :style="{ width: `${((page + 1) / pageCount) * 100}%` }"
+        ></div>
+      </div>
+      <div class="flex justify-between mt-1 text-xs text-gray-400">
+        <span>Página 1</span>
+        <span>Página {{ pageCount }}</span>
       </div>
     </div>
     
-    <!-- Panel central: Progreso y rango -->
-    <div class="flex flex-col items-center justify-center">
-      <div class="w-full max-w-xs mb-2">
-        <div class="flex justify-between text-xs text-gray-500 mb-1">
-          <span>Progreso</span>
-          <span class="font-medium text-blue-600">{{ Math.round(((page + 1) / pageCount) * 100) }}%</span>
-        </div>
-        <div class="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-          <div 
-            class="h-full bg-blue-600 transition-all"
-            :style="{ width: `${((page + 1) / pageCount) * 100}%` }"
-          ></div>
-        </div>
-      </div>
-      <div class="text-sm text-gray-600">
-        <span class="font-semibold text-gray-900">{{ first }}</span> – 
+    <!-- Navegación completa -->
+    <div class="flex items-center gap-4">
+      <!-- Información de registros -->
+      <div class="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+        <span class="font-semibold text-gray-900">{{ first }}</span> 
+        <span class="text-gray-400">—</span> 
         <span class="font-semibold text-gray-900">{{ last }}</span>
-        <span class="text-gray-400 mx-2">|</span>
+        <span class="text-gray-400 mx-2">de</span>
         <span class="font-semibold text-gray-900">{{ totalRecords }}</span>
-        <span class="text-gray-500 ml-1">total</span>
-      </div>
-    </div>
-    
-    <!-- Panel derecho: Navegación -->
-    <div class="flex items-center justify-end gap-4">
-      <div class="text-right">
-        <span class="text-xs text-gray-500 block">PÁGINA</span>
-        <span class="text-2xl font-light text-gray-800">{{ page + 1 }}</span>
-        <span class="text-sm text-gray-400 ml-1">/{{ pageCount }}</span>
       </div>
       
-      <div class="flex items-center gap-1">
+      <!-- Controles de página -->
+      <div class="flex items-center gap-2">
         <Button 
           icon="pi pi-chevron-left" 
           severity="secondary" 
-          rounded
+          outlined
           @click="prevPageCallback" 
           :disabled="page === 0"
-          class="w-10 h-10"
+          class="w-10 h-10 border-gray-300"
         />
+        <span class="text-sm text-gray-700 min-w-[90px] text-center">
+          Página <span class="font-semibold text-gray-900">{{ page + 1 }}</span> de {{ pageCount }}
+        </span>
         <Button 
           icon="pi pi-chevron-right" 
           severity="secondary" 
-          rounded
+          outlined
           @click="nextPageCallback" 
           :disabled="page === pageCount - 1"
-          class="w-10 h-10"
+          class="w-10 h-10 border-gray-300"
         />
       </div>
     </div>
