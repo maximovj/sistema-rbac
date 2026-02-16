@@ -218,11 +218,13 @@
       v-model:filters="filters"
       :value="permisos"
       paginator
-      :rows="10"
-      :rowsPerPageOptions="[10, 50, 100]"
+      :rows="rowsDataTable"
+      :rowsPerPageOptions="[2, 10, 50, 100]"
       removableSort
       stripedRows
       showGridlines
+      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      currentPageReportTemplate="Mostrando {first} / {last} registros de {totalRecords} registros"
     >
       <Column field="id" header="ID" sortable style="width: 80px" />
       <Column field="nombre" header="Nombre" sortable />
@@ -265,6 +267,48 @@
         </template>
       </Column>
 
+      <template #paginatorcontainer="{ first, last, page, pageCount, prevPageCallback, nextPageCallback, rowChangeCallback, totalRecords }">
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <div class="flex items-center gap-3">
+            <Button 
+              icon="pi pi-chevron-left" 
+              rounded 
+              outlined 
+              severity="secondary"
+              @click="prevPageCallback" 
+              :disabled="page === 0" 
+            />
+            <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-sm font-medium">
+              Página {{ page + 1 }} de {{ pageCount }}
+            </span>
+            <Button 
+              icon="pi pi-chevron-right" 
+              rounded 
+              outlined 
+              severity="secondary"
+              @click="nextPageCallback" 
+              :disabled="page === pageCount - 1" 
+            />
+          </div>
+          
+          <span class="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-md">
+            <i class="pi pi-list mr-2 text-xs"></i>
+            {{ first }} - {{ last }} de {{ totalRecords }} registros
+          </span>
+          
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-600">Mostrar:</span>
+            <Dropdown 
+              :options="[2, 10, 50, 100]" 
+              v-model="rowsDataTable" 
+              @change="rowChangeCallback(rowsDataTable)" 
+              class="w-20"
+              placeholder="Filas"
+            />
+          </div>
+        </div>
+      </template>
+      
     </DataTable>
   </div>
   </PlantillaBase>
@@ -300,6 +344,7 @@ export default {
     fechaInicio.setFullYear(fechaFin.getFullYear() - 10);
 
     return {
+      rowsDataTable: 2,
       permisos: [
         { id: 1, nombre: 'Ver Usuarios', modulo: 'Usuarios', estado: 'Activo', fechaCreacion: new Date('2024-01-10') },
         { id: 2, nombre: 'Crear Usuario', modulo: 'Usuarios', estado: 'Activo', fechaCreacion: new Date('2024-01-15') },
