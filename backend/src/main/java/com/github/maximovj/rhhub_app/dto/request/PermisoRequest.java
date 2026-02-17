@@ -1,5 +1,9 @@
 package com.github.maximovj.rhhub_app.dto.request;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
@@ -32,5 +36,9 @@ public class PermisoRequest {
     message = "El campo modulo solo puede contener letras y guion bajo")
     @JsonProperty(value = "modulo")
     private String modulo;
+
+    @JsonProperty(value = "es_activo", required = false, defaultValue = "false")
+    @Builder.Default
+    private Boolean es_activo = false;
 
 }

@@ -22,6 +22,10 @@ public class PermisoMapper {
             req.getPermiso_id(), 
             req.getAccion(), 
             req.getModulo(),
+            false,
+            null,
+            null,
+            null,
             Set.of()
         ));
     }

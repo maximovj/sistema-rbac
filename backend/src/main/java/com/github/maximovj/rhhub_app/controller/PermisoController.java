@@ -3,6 +3,7 @@ package com.github.maximovj.rhhub_app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.maximovj.rhhub_app.dto.request.FechaCreacionRequest;
 import com.github.maximovj.rhhub_app.dto.request.PermisoRequest;
 import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
 import com.github.maximovj.rhhub_app.entity.PermisoEntity;
@@ -17,6 +18,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -60,14 +63,20 @@ public class PermisoController {
     public ResponseEntity<?> getBuscarPermisos(
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "10") Integer size,
-        @ModelAttribute PermisoRequest req
-
+        @ModelAttribute PermisoRequest req,
+        @ModelAttribute(name = "fecha_creacion") FechaCreacionRequest fechaCreacionReq
     ) {
+        log.info("getBuscarPermisos recibido: {} / {}", page, size);
+        log.info("getBuscarPermisos recibido: {}", req.toString());
+        log.info("getBuscarPermisos recibido: {}", fechaCreacionReq.toString());
+        
         ApiResponse<PermisoEntity> response = new ApiResponse<>();
-        Specification<PermisoEntity> specPermiso = new PermisoSpecBuilder()
+            Specification<PermisoEntity> specPermiso = new PermisoSpecBuilder()
                                                     .permisoId(req.getPermiso_id())
                                                     .accion(req.getAccion())
                                                     .modulo(req.getModulo())
+                                                    .esActivo(req.getEs_activo())
+                                                    .fechaCreacion(fechaCreacionReq)
                                                     .build();
         Pageable pageable = PageRequest.of(page, size, Sort.by("modulo").ascending());
         return response.okPage("Lista de permisos", this.service.findBySpecification(specPermiso, pageable));

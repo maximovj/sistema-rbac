@@ -55,6 +55,7 @@ public class PermisoSeeder implements ApplicationRunner {
                     PermisoEntity permiso = PermisoEntity.builder()
                     .accion(strPermiso)
                     .modulo(strModulo)
+                    .esActivo(true)
                     .build();
 
                     if(permiso != null) {
