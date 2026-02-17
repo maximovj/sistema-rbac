@@ -9,7 +9,7 @@
     >
       <template #actions>
         <Button label="Nuevo" icon="pi pi-plus" />
-        <Button icon="pi pi-refresh" outlined />
+        <Button icon="pi pi-refresh" @click="aplicarBusqueda" outlined />
         <!-- Botón menú -->
           <Button
           icon="pi pi-ellipsis-v"
@@ -40,7 +40,7 @@
           <div v-if="filtersVisible" class="flex flex-col gap-4">
             <!-- Filtros -->
             
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 
                 <span class="p-input-icon-left w-full">
                   <span><i class="pi pi-search" /> <span class="font-bold text-sm">Acción</span></span>
@@ -56,6 +56,33 @@
                   <InputText
                     v-model="searchForm.modulo"
                     placeholder="Buscar por módulo..."
+                    class="w-full"
+                  />
+                </span>
+
+                <span class="p-input-icon-left w-full">
+                  <span><i class="pi pi-filter" /> <span class="font-bold text-sm">Estado</span></span>
+                  <Select
+                    v-model="searchForm.es_activo"
+                    :options="estados"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="Seleccionar estado..."
+                    class="w-full"
+                  />
+                </span>
+
+                <span class="w-full">
+                  <span>
+                    <i class="pi pi-calendar" />
+                    <span class="font-bold text-sm">Fecha creación (Rango)</span>
+                  </span>
+
+                  <DatePicker
+                    v-model="searchForm.fecha_creacion"
+                    selectionMode="range"
+                    dateFormat="yy-mm-dd"
+                    showIcon
                     class="w-full"
                   />
                 </span>
@@ -103,6 +130,21 @@
       <Column field="permiso_id" header="ID" sortable style="width: 80px" />
       <Column field="accion" header="Accion" sortable />
       <Column field="modulo" header="Módulo" sortable />
+      <Column field="es_activo" header="Estado" style="width: 120px">
+        <template #body="{ data }">
+          <Tag :value="getEstadoLabel(data.es_activo)" :severity="getEstadoSeverity(data.es_activo)" />
+        </template>
+      </Column>
+      <Column field="creado_en" header="Creación" style="width: 150px">
+        <template #body="{ data }">
+          {{ formatDate(new Date(data.creado_en)) }}
+        </template>
+      </Column>
+      <Column field="actualizado_en" header="Actualización" style="width: 150px">
+        <template #body="{ data }">
+          {{ formatDate(new Date(data.actualizado_en)) }}
+        </template>
+      </Column>
       <Column header="Acciones" style="width: 180px">
         <template #body="{ data }">
           <div class="flex gap-2">
@@ -179,6 +221,8 @@ export default {
       searchForm: {
         accion: null,
         modulo: null,
+        es_activo: null,
+        fecha_creacion: [fechaInicio, fechaFin],
       },
 
       filtersVisible: false,
@@ -186,11 +230,13 @@ export default {
       filters: {
         accion: { value: null, matchMode: FilterMatchMode.CONTAINS },
         modulo: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        es_activo: { value: null, matchMode: FilterMatchMode.EQUALS },
+        fecha_creacion: { value: null, matchMode: FilterMatchMode.DATE_BETWEEN },
       },
 
       estados: [
-        { label: 'Activo', value: 'Activo', severity: 'success' },
-        { label: 'Inactivo', value: 'Inactivo', severity: 'danger' }
+        { label: 'Activo', value: true, severity: 'success' },
+        { label: 'Inactivo', value: false, severity: 'danger' }
       ],
 
       menu: null,
@@ -205,24 +251,44 @@ export default {
   },
 
   computed: {
-  activeFilters() {
-    return [
-      this.searchForm.accion && {
-        icon: 'pi pi-search',
-        key: 'accion',
-        label: 'Acción',
-        value: this.searchForm.accion,
-        onRemove: () => this.searchForm.accion = null
-      },
-      this.searchForm.modulo && {
-        icon: 'pi pi-box',
-        key: 'modulo',
-        label: 'Módulo',
-        value: this.searchForm.modulo,
-        onRemove: () => this.searchForm.modulo = null
-      },
-    ].filter(Boolean)
-  },
+    optParams() {
+      let params = {};
+      if (this.searchForm?.accion) {
+        params.accion = this.searchForm?.accion
+      }
+      if (this.searchForm?.modulo) {
+        params.modulo = this.searchForm?.modulo
+      }
+      if (this.searchForm?.es_activo !== null) {
+        params.es_activo = this.searchForm?.es_activo
+      }
+
+      if (this.searchForm?.fecha_creacion && this.searchForm?.fecha_creacion?.length === 2) {
+        params.creado_desde = this.searchForm.fecha_creacion?.[0]?.toISOString()
+        params.creado_hasta = this.searchForm.fecha_creacion?.[1]?.toISOString()
+      }
+
+      return params;
+    },
+    
+    activeFilters() {
+      return [
+        this.searchForm.accion && {
+          icon: 'pi pi-search',
+          key: 'accion',
+          label: 'Acción',
+          value: this.searchForm.accion,
+          onRemove: () => this.searchForm.accion = null
+        },
+        this.searchForm.modulo && {
+          icon: 'pi pi-box',
+          key: 'modulo',
+          label: 'Módulo',
+          value: this.searchForm.modulo,
+          onRemove: () => this.searchForm.modulo = null
+        },
+      ].filter(Boolean)
+    },
 },
 
   methods: {
@@ -236,6 +302,12 @@ export default {
 
       this.filters.accion.value = this.searchForm.accion
       this.filters.modulo.value = this.searchForm.modulo
+      this.filters.es_activo.value = this.searchForm.es_activo
+        if (this.searchForm.fecha_creacion && this.searchForm.fecha_creacion.length === 2) {
+          this.filters.fecha_creacion.value = this.searchForm.fecha_creacion
+        } else {
+          this.filters.fecha_creacion.value = null
+        }
 
       this.cargarPermisos()
     },
@@ -243,7 +315,8 @@ export default {
     clearFilters() {
       this.searchForm = {
         accion: null,
-        modulo: null
+        modulo: null,
+        es_activo: null,
       }
       this.aplicarBusqueda()
     },
@@ -282,13 +355,12 @@ export default {
     },
 
     async cargarPermisos() {
-      this.cargandoRegistros = true;
+      this.cargandoRegistros = true;  
 
       await permisosService.getBuscar({
           page: this.page,
           size: this.dataTableRows,
-          accion: this.searchForm.accion,
-          modulo: this.searchForm.modulo
+          ...this.optParams,
       })
         .then(response => {
           logger.info('cargarPermisos', 'Permisos cargados:', response.data);

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-1 flex-wrap">
+  <div class="hidden md:flex gap-1 flex-wrap">
     <Chip
       v-for="filter in filters"
       :icon="filter.icon"

@@ -1,5 +1,5 @@
 <template>
-  <Card class="mb-4">
+  <Card class="mb-4 overflow-auto">
     <template #title>
       <div
         class="flex items-center justify-between"
