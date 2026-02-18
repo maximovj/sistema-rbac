@@ -52,6 +52,7 @@ import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import { now } from '@vueuse/core'
 import permisosService from '@/common/services/permisos.service'
+import { useExcelExport } from '@/common/composables/useExcelExport'
 
 import { scopedLogger } from '@/common/utils/loggerUtils'
 const logger = scopedLogger('PermisosView.vue');
@@ -109,7 +110,7 @@ export default {
         { label: 'Editar', icon: 'pi pi-pencil' },
         { label: 'Eliminar', icon: 'pi pi-trash' },
         { separator: true },
-        { label: 'Exportar', icon: 'pi pi-upload' }
+        { label: 'Exportar', icon: 'pi pi-upload', command: () => this.exportarExcel() }
       ]
     }
   },
@@ -196,6 +197,53 @@ export default {
     getEstadoLabel(value) {
       const estado = this.estados.find(e => e.value === value)
       return estado ? estado.label : value
+    },
+
+    async exportarExcel() {
+      const { exportToExcel } = useExcelExport();
+
+      await exportToExcel({
+        data: this.permisos,
+
+        sheetName: 'Permisos',
+        fileName: `permisos_${Date.now()}.xlsx`,
+        creator: 'Sistema de Permisos',
+
+        columns: [
+          { header: 'Id', key: 'permiso_id', width: 10 },
+          { header: 'Acción', key: 'accion', width: 25 },
+          { header: 'Módulo', key: 'modulo', width: 20 },
+          { header: 'Estado', key: 'estado', width: 15 },
+          { header: 'Fecha Creación', key: 'creado_en', width: 20 },
+          { header: 'Fecha Actualización', key: 'actualizado_en', width: 20 }
+        ],
+
+        mapRow: p => ({
+          permiso_id: p.permiso_id,
+          accion: p.accion,
+          modulo: p.modulo,
+          estado: p.es_activo ? 'Activo' : 'Inactivo',
+          creado_en: p.creado_en ? new Date(p.creado_en) : null,
+          actualizado_en: p.actualizado_en ? new Date(p.actualizado_en) : null
+        }),
+
+        styles: {
+          creado_en: { numFmt: 'dd/mm/yyyy' },
+          actualizado_en: { numFmt: 'dd/mm/yyyy' },
+          permiso_id: { alignment: { horizontal: 'center' } },
+          estado: { alignment: { horizontal: 'center' } }
+        },
+
+        rowStyle: {
+          estado: { fill: {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFD1FAE5' } 
+            } 
+          }
+        },
+
+      });
     },
 
     editarPermiso(permiso) {
