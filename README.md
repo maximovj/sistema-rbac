@@ -75,7 +75,9 @@ project-root/
 ```
 
 **Accedes:**
+
 - 🌐 **Frontend:** `http://localhost:5173/`
+
 - 🔧 **API Backend:** `http://localhost:8667/api/v1/...`
 
 ## 📷 Vistas Previas
