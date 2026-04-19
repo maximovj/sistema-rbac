@@ -26,29 +26,6 @@
     
     <build>
         <plugins>
-            <!-- 1. Plugin para detectar Node.js -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>detect-node</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>cmd</executable>
-                            <arguments>
-                                <argument>/c</argument>
-                                <argument>echo 📦 Node.js: &amp;&amp; node --version</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
             <!-- 2. Mensaje informativo -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -82,11 +59,22 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>${frontend-maven-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip> <!-- No descargar Node.js -->
                     <workingDirectory>./</workingDirectory>
+                    <!-- 🔥 Especifica versiones concretas -->
+                    <nodeVersion>v20.20.2</nodeVersion>
+                    <npmVersion>10.8.2</npmVersion>
                 </configuration>
                 <executions>
-                    <!-- Solo npm install -->
+                    <!-- Primero: instalar Node.js -->
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                    
+                    <!-- Luego: npm install -->
                     <execution>
                         <id>npm-install</id>
                         <goals>
@@ -98,7 +86,7 @@
                         </configuration>
                     </execution>
                     
-                    <!-- npm run build -->
+                    <!-- Finalmente: npm run build -->
                     <execution>
                         <id>npm-build</id>
                         <goals>
