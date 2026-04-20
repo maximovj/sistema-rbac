@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -119,6 +120,9 @@ public class UsuarioController {
         }
         
         UsuarioEntity nuevoUsuario = mapeoReq.get();
+        LocalDateTime fechaCreacion = LocalDateTime.now();
+        nuevoUsuario.setCreadoEn(fechaCreacion);
+        nuevoUsuario.setActualizadoEn(fechaCreacion);
         UsuarioEntity creada = this.usuarioService.create(nuevoUsuario);
         return ApiResponse.ok("Usuario creada correctamente", UsuarioMapper.toDTOBasic(creada));
     }
