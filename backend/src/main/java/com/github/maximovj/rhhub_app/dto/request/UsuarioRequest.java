@@ -42,4 +42,7 @@ public class UsuarioRequest {
     @JsonProperty(value = "confirmar_contrasena")
     private String confirmar_contrasena;
 
+    @JsonProperty(value =  "es_activo", defaultValue = "false", required = true)
+    private Boolean es_activo;
+    
 }

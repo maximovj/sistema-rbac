@@ -76,7 +76,7 @@ public class UsuarioMapper {
                 usuario.setContrasena(passwordEncoder.encode(req.getConfirmar_contrasena().trim()));
             }
 
-            usuario.setEsActivo(false);
+            usuario.setEsActivo(req.getEs_activo());
             return Optional.of(usuario);
         } catch (Exception e) {
             System.out.println("Hubo un error: %s".formatted(e.getMessage()));
