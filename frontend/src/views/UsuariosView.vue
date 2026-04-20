@@ -3,6 +3,7 @@
         <div class="card">
             <CustomHeaderPagina title="Gestión de Usuarios" subtitle="Lista de usuarios disponibles">
                 <template #actions>
+                    <CrearUsuario />
                     <Button icon="pi pi-refresh" @click="aplicarBusqueda" outlined />
                     <!-- Botón menú -->
                     <Button icon="pi pi-ellipsis-v" class="p-button-sm p-button-text" @click="toggleMenu"

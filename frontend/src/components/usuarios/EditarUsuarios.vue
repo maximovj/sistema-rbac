@@ -4,7 +4,7 @@ import usuariosService from "@/common/services/usuarios.service";
 import gruposService from "@/common/services/grupos.service";
 import { useAlertStore } from "@/common/stores/alertStore";
 
-import { log, scopedLogger } from "@/common/utils/loggerUtils";
+import { scopedLogger } from "@/common/utils/loggerUtils";
 const logger = scopedLogger("EditarUsuarios.vue");
 
 import accion from "@/common/acciones/usuarios.acciones";
