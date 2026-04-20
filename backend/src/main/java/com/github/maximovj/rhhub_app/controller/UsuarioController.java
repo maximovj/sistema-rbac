@@ -4,11 +4,9 @@ import com.github.maximovj.rhhub_app.dto.request.FechaCreacionRequest;
 import com.github.maximovj.rhhub_app.dto.request.UsuarioFilterRequest;
 import com.github.maximovj.rhhub_app.dto.request.UsuarioRequest;
 import com.github.maximovj.rhhub_app.dto.response.ApiResponse;
-import com.github.maximovj.rhhub_app.entity.RolEntity;
 import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 import com.github.maximovj.rhhub_app.exception.BusinessException;
 import com.github.maximovj.rhhub_app.exception.ResourceNotFoundException;
-import com.github.maximovj.rhhub_app.mapper.RolMapper;
 import com.github.maximovj.rhhub_app.mapper.UsuarioMapper;
 import com.github.maximovj.rhhub_app.projection.UsuarioProjection;
 import com.github.maximovj.rhhub_app.repository.specification.UsuarioSpecBuilder;
@@ -77,6 +75,7 @@ public class UsuarioController {
                                             .usuario(req.getUsuario())
                                             .correo(req.getCorreo())
                                             .esActivo(req.getEs_activo())
+                                            .fechaCreacion(fechaCreacionReq)
                                             .build();
         Pageable pageable = PageRequest.of(page, size, Sort.by("usuario").ascending());
         return response.okPage("Filtro de usuarios", this.usuarioService.buscarUsuarios(spec, pageable));

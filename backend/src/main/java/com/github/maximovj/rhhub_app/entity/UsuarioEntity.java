@@ -1,8 +1,12 @@
 package com.github.maximovj.rhhub_app.entity;
 
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -71,6 +75,20 @@ public class UsuarioEntity {
     @JsonProperty("token")
     @JsonIgnore
     private String token;
+
+    @CreatedDate
+    @Column(name = "CREADO_EN", nullable = false)
+    @JsonProperty("creado_en")
+    private LocalDateTime creadoEn;
+    
+    @LastModifiedDate
+    @Column(name = "ACTUALIZADO_EN", nullable = false)
+    @JsonProperty("actualizado_en")
+    private LocalDateTime actualizadoEn;
+
+    @Column(name = "ELIMINADO_EN", nullable = true)
+    @JsonProperty("eliminado_en")
+    private LocalDateTime eliminadoEn;
 
     // !! RELACIONES
 

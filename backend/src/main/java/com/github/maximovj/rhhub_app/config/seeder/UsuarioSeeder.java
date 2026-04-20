@@ -1,5 +1,6 @@
 package com.github.maximovj.rhhub_app.config.seeder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,9 @@ public class UsuarioSeeder implements ApplicationRunner {
                 .token(null)
                 .estado(estadoOpt.get())
                 .grupo(grupoOpt.get())
+                .creadoEn(LocalDateTime.now())
+                .actualizadoEn(LocalDateTime.now())
+                .eliminadoEn(null)
                 .build();
 
         usuarioRepository.save(usuario);

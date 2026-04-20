@@ -1,5 +1,7 @@
 package com.github.maximovj.rhhub_app.projection;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.maximovj.rhhub_app.entity.UsuarioEntity;
 
@@ -16,6 +18,15 @@ public interface UsuarioProjection {
 
     @JsonProperty("es_activo")
     Boolean getEsActivo();
+
+    @JsonProperty("creado_en")
+    public LocalDateTime getCreadoEn();
+
+    @JsonProperty("actualizado_en")
+    public LocalDateTime getActualizadoEn();
+    
+    @JsonProperty("eliminado_en")
+    public LocalDateTime getEliminadoEn();
     
     static UsuarioProjection fromEntity(UsuarioEntity e) {
         return new UsuarioProjection() {
@@ -23,6 +34,9 @@ public interface UsuarioProjection {
             public String getUsuario() { return e.getUsuario(); }
             public String getCorreo() { return e.getCorreo(); }
             public Boolean getEsActivo() { return e.getEsActivo(); }
+            public LocalDateTime getCreadoEn() { return e.getCreadoEn(); }
+            public LocalDateTime getActualizadoEn() { return e.getActualizadoEn(); }
+            public LocalDateTime getEliminadoEn() { return e.getEliminadoEn(); }
         };
     }
     
