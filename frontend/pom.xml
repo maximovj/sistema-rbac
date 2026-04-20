@@ -8,13 +8,13 @@
     
     <parent>
         <groupId>com.github.maximovj</groupId>
-        <artifactId>rhhub</artifactId>
+        <artifactId>rbac</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     <artifactId>frontend</artifactId>
-    <name>rhhub-frontend</name>
+    <name>rbac-frontend</name>
     <packaging>pom</packaging>
     
     <properties>

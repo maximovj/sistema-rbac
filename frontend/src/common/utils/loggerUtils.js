@@ -1,6 +1,6 @@
 // src/common/utils/loggerUtils.js
 const ENABLE_LOGS = import.meta.env.VITE_ENABLE_LOGS === 'true';
-const APP_PREFIX = '[RHHUB-APP]';
+const APP_PREFIX = '[RBAC-APP]';
 
 const now = () =>
   new Date().toLocaleString('es-MX', {
