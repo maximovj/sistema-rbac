@@ -16,7 +16,7 @@
     
     <!-- ESTE es el parent de tu proyecto completo -->
     <groupId>com.github.maximovj</groupId>
-    <artifactId>rhhub</artifactId>
+    <artifactId>rbac</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     

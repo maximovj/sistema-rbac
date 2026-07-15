@@ -17,7 +17,7 @@
     <!-- Parent es el POM raíz -->
     <parent>
         <groupId>com.github.maximovj</groupId>
-        <artifactId>rhhub</artifactId>
+        <artifactId>rbac</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- Apunta al POM raíz -->
     </parent>
