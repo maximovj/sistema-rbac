@@ -6,11 +6,12 @@
     
     <modelVersion>4.0.0</modelVersion>
     
+    <!-- Parent es el POM raíz -->
     <parent>
         <groupId>com.github.maximovj</groupId>
-        <artifactId>rbac</artifactId>
+        <artifactId>rhhub</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath> <!-- Apunta al POM raíz -->
     </parent>
     
     <artifactId>frontend</artifactId>
